@@ -1,0 +1,94 @@
+
+#global_login_container{
+    display: flex;
+    justify-content: center;
+    align-items: top;
+    height: 100vh;
+
+    background-color:#1f2021;
+}
+#around_login_form{
+    text-align: center;
+    width:700px;
+    justify-content: center;
+
+}
+#logoImage {
+    margin-top: 20px;
+    width:700px;
+}
+
+.login_form{
+    background-color:#2e2f30;
+    width:400px;
+    height:300px ;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px;
+
+}
+#register_form{
+    height: 430px;
+}
+#login_form_header{
+    margin:5px;
+    font-family:Verdana;
+}
+#login_form_header span {
+    font-size: 22px;
+    color:white;
+
+
+}
+.login_input{
+    margin-bottom:20px;
+    width: 300px;
+    height: 40px;
+    font-size: 16px;
+    padding: 5px;
+}
+#login_submit{
+    width: 300px;
+    height: 40px;
+    font-size: 16px;
+    background-color: #db4ba6;
+}
+#login_acc_create{
+    color:pink;
+}
+.choose_gender{
+    font-size: 18px;
+    color: white;
+
+}
+#chg{
+    color:#b75894;
+    font-weight:bold;
+}
+.choose_gender label {
+    margin-right: 10px;
+}
+
+.redirected{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color:#1f2021 ;
+}
+
+.pnl13{
+    background-color: #383437;
+}
+
+.rdr{
+    height: 100vh;
+}
+
+.rdr p{
+    margin-top: 100px;
+    font-size: 22px;
+    font-family:Verdana;
+    color:rgb(231, 139, 170);
+}

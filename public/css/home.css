@@ -1,0 +1,184 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+#logo{
+    width: 300px;
+    height: 70px;
+    margin-left: 30px;
+}
+#upper-panel{
+    background-color: #2e2f30;
+    height: 70px;
+}
+
+#search-div{
+    display: flex;
+    align-items: center;
+}
+
+#search{
+    width: 80%;
+}
+
+#home-container{
+    background-color: #d3d7de;
+    min-height: 100%;  /*ovo treba da bude dinamicki */
+}
+
+#quick-post{
+ resize: none;  
+}
+
+#confirm-post{
+    width: 200px; 
+    height: 40px; 
+    font-size: 16px;          
+ 
+}
+
+.btn-primary:disabled {
+    background-color: grey;
+}
+
+.btn-primary.enabled {
+    background-color: #db4ba6;
+}
+
+.btn.col-3{
+    display: flex;
+    align-items: center;
+    padding-left: 0px;
+}
+
+.post.col-7{
+    margin: 0px;
+}
+
+.usrBar{
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding-right: 50px;
+}
+.currUserName{
+    font-size: 18px;
+    color: white;
+}
+
+.btn.btn-secondary.dropdown-toggle{
+    background-color: #2e2f30;
+    margin-right: 20px;
+}
+
+.pfpNav{
+    width: 60px;
+    height:60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.pfpProfile{
+    width: 300px;
+    height:300px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #2e2f30;
+}
+
+.profileName{
+    font-size: 40px;
+    margin: 0%;
+
+}
+.profileUsername{
+    font-size: 20px;
+    color: gray;
+    margin:0%
+}
+
+.profile-picture-search{
+    width: 40px;
+    height:40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #2e2f30;
+}
+
+#suggestion-box{
+    margin-left: 60px;
+    margin-right: 24%;
+    margin-bottom: 50px;
+    text-align: left;
+}
+
+#addORedit_btn{
+    width: 200px;
+    background-color: gray;
+    margin-bottom: 50px;
+}
+
+
+
+        .profile-box{
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea{
+            resize: none;
+        }
+        .likesCount {
+            cursor: pointer;
+        }
+        .commentsCount{
+            cursor: pointer;
+        }
+
+        #profileDescription{
+            white-space: pre-line;
+            padding: 20px;
+            border: 1px solid #ddd;
+            font-size: 20px;
+            color:white;
+            border-radius: 8px;
+            
+            background-color: #2e2f30;
+
+        }
+
+        #bannedUsersBtn{
+            background-color: #db4ba6;
+            margin-bottom: 50px;
+        }
+
+        #adminLogo{
+            width: 300px;
+            height: 70px;
+            margin-left: 30px;
+        }
+
+        #ban_btn{
+            width: 200px;
+            background-color: gray;
+            margin-bottom: 50px;
+        }
+
+        .ban-footer{
+            justify-content: space-between;
+        }
+
+        .subm-ban-btn{
+            background-color:rgb(196, 68, 68) ;
+            color: white;
+            font-size: 18px;
+        }
+
+        #btn-qpost{
+            flex-wrap: wrap
+        }

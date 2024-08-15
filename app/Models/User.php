@@ -1,45 +1,51 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'users';
+    protected $primaryKey = 'id_user';
+    public $timestamps = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+    'username', 'password', 'email', 'name', 'prof_description', 'profile_picture', 'user_type', 'gender', 'verified', 'verification_token'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'id_user');
+    }
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'id_user');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'id_user');
+    }
+
+    public function followers()
+    {
+        return $this->hasMany(Following::class, 'id_followed_user');
+    }
+
+    public function following()
+    {
+        return $this->hasMany(Following::class, 'id_follower');
+    }
+
+    public function bans()
+    {
+         return $this->hasOne(Ban::class, 'id_user');
+    }
+
+    public function deactivation()
+    {
+         return $this->hasOne(DeactivatedUser::class, 'id_user');
+    }
 }
+

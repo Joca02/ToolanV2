@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\UserRegistrationService;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,53 +22,43 @@ class RegisterController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
-
     use RegistersUsers;
 
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
     protected $redirectTo = '/home';
+    private $registrationService;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'gender' => ['required', 'string', 'in:male,female'],
         ]);
     }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function create(array $data)
+    public function __construct(UserRegistrationService $registrationService)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $this->registrationService = $registrationService;
+       // $this->middleware('guest');
+    }
+
+    public function checkInputField(Request $request){
+        $fieldName=$request->input("fieldName");
+        $fieldValue=$request->input("fieldValue");
+        $isAvailable=false;
+        if($fieldName=='username')
+            $isAvailable= $this->registrationService->isUsernameAvailable($fieldValue);
+        else if($fieldName=='email')
+            $isAvailable= $this->registrationService->isEmailAvailable($fieldValue);
+        return response()->json(['available' => $isAvailable]);
+    }
+    protected function create(Request $request)
+    {
+        $data=$request->all();
+        $this->registrationService->registerUser($data);
+
+        return view('afterRegistrationView',['email'=>$data['email']]);
     }
 }

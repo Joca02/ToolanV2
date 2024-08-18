@@ -28,7 +28,7 @@
 
 }
 #register_form{
-    height: 430px;
+    height: 500px;
 }
 #login_form_header{
     margin:5px;
@@ -37,9 +37,14 @@
 #login_form_header span {
     font-size: 22px;
     color:white;
-
-
 }
+
+.warning {
+    border-color: red;
+    box-shadow: 0 0 5px red;
+}
+
+
 .login_input{
     margin-bottom:20px;
     width: 300px;

@@ -14,7 +14,13 @@
 
 </head>
 <body>
+@if(session('success'))
+    <div class="alert alert-success" style="margin-bottom: 0">
+        {{ session('success') }}
+    </div>
+@endif
 <div id="global_login_container">
+
     <div id="around_login_form">
         <img id="logoImage" src="{{asset('uploads/toolan.png')}}" alt="logo">
         <br><br>
@@ -24,12 +30,13 @@
                 <br><br>
             </div>
             <form action="login.php" method="post">
+                @csrf
                 <input type="text" name="username" id="username" placeholder="Username" class="login_input"><br>
                 <input type="password" name="password" id="password" placeholder="Password" class="login_input" required><br>
                 <button type="submit" class="btn btn-primary" id="login_submit">Log In</button>
             </form>
             <br>
-            <a href="register.php" id="login_acc_create">Dont have an account? Sign up now!</a>
+            <a href="{{route('register')}}" id="login_acc_create">Dont have an account? Sign up now!</a>
         </div>
     </div>
 </div>

@@ -18,6 +18,10 @@
     <div class="alert alert-success" style="margin-bottom: 0">
         {{ session('success') }}
     </div>
+@elseif(session('failure'))
+    <div class="alert alert-danger" style="margin-bottom: 0">
+        {{ session('failure') }}
+    </div>
 @endif
 <div id="global_login_container">
 
@@ -29,7 +33,7 @@
                 <span>Log Into TOOLAN</span>
                 <br><br>
             </div>
-            <form action="login.php" method="post">
+            <form action="{{route('login')}}" method="post">
                 @csrf
                 <input type="text" name="username" id="username" placeholder="Username" class="login_input"><br>
                 <input type="password" name="password" id="password" placeholder="Password" class="login_input" required><br>
@@ -43,46 +47,46 @@
 
 
 <script>
-    $(function(){
-        var btn=$("#login_submit");
-        var form = $("form");
-        btn.click(function(){
-            var usr=$("#username").val();
-            var psw=$("#password").val();
-            if(usr.length<2)
-                alert("Username must hold at least 2 characters");
-            else if (psw.length<2)
-                alert("Password must hold at least 2 characters");
-            else
-            {
-                $.post("check_login.php",{username:usr,password:psw},
-                    function(response)
-                    {
-                        if(response=="admin success")
-                        {
-                            window.location.href="admin_home.php";
-                        }
-                        else if(response=="success")
-                        {
-                            window.location.href ="home.php";
-                        }
-                        else if(response.status=="banned")
-                        {
-                            alert("You have been banned until:   "+response.date_end+"\nFor reason:\n"+response.banReason);
-                        }
-                        else
-                        {
-                            alert("Username and password don't match");
-                        }
-                    })
-            }
-
-        })
-
-        form.submit(function(event) {
-            event.preventDefault();
-        });
-    })
+    // $(function(){
+    //     var btn=$("#login_submit");
+    //     var form = $("form");
+    //     btn.click(function(){
+    //         var usr=$("#username").val();
+    //         var psw=$("#password").val();
+    //         if(usr.length<2)
+    //             alert("Username must hold at least 2 characters");
+    //         else if (psw.length<2)
+    //             alert("Password must hold at least 2 characters");
+    //         else
+    //         {
+    //             $.post("check_login.php",{username:usr,password:psw},
+    //                 function(response)
+    //                 {
+    //                     if(response=="admin success")
+    //                     {
+    //                         window.location.href="admin_home.php";
+    //                     }
+    //                     else if(response=="success")
+    //                     {
+    //                         window.location.href ="home.php";
+    //                     }
+    //                     else if(response.status=="banned")
+    //                     {
+    //                         alert("You have been banned until:   "+response.date_end+"\nFor reason:\n"+response.banReason);
+    //                     }
+    //                     else
+    //                     {
+    //                         alert("Username and password don't match");
+    //                     }
+    //                 })
+    //         }
+    //
+    //     })
+    //
+    //     form.submit(function(event) {
+    //         event.preventDefault();
+    //     });
+    // })
 </script>
 </body>
 </html>

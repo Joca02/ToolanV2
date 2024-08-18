@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\VerificationController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,14 +17,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Auth::routes();
+Route::middleware('guest')->group(function () {
+    Route::post('/check-input-field', [App\Http\Controllers\Auth\RegisterController::class, 'checkInputField'])->name('checkInputField');
+    Route::post('/register',[App\Http\Controllers\Auth\RegisterController::class,'create'])->name('register');
+    Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
+});
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::post('/check-input-field', [App\Http\Controllers\Auth\RegisterController::class, 'checkInputField'])->name('checkInputField');
-Route::post('/register',[App\Http\Controllers\Auth\RegisterController::class,'create'])->name('register');
-Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/logout',[LoginController::class,'logout'])->name('logout');
+});
 
 

@@ -3,23 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
 
     use AuthenticatesUsers;
 
+    private $authService;
     /**
      * Where to redirect users after login.
      *
@@ -32,9 +25,27 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(AuthService $authService)
     {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+        $this->authService = $authService;
+//        $this->middleware('guest')->except('logout');
+//        $this->middleware('auth')->only('logout');
+    }
+
+    public function login(Request $request){
+        $auth=$this->authService->authenticate(
+            $request->username,
+            $request->password
+        );
+        if(!$auth){
+            return redirect()->back()->with('failure', 'Username and password do not match');
+        }
+        else{
+            return redirect('/home');
+        }
+    }
+
+    public function logout(){
+        return $this->authService->logout();
     }
 }

@@ -15,7 +15,7 @@
     </div>
     <div class="redirected col-8 rdr">
         <div>
-            <a href="{{route('login')}}"><img src="uploads/toolan.png" alt="Logo"></a>
+            <a href="{{route('login')}}"><img src="/uploads/toolan.png" alt="Logo"></a>
             <div>
                 <p>Verification link has been sent to <strong>{{ $email }}</strong>, please verify your account</p>
                 <p>Click on the site logo to get redirected to the Log In page</p>

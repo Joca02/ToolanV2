@@ -26,7 +26,7 @@
 <div id="global_login_container">
 
     <div id="around_login_form">
-        <img id="logoImage" src="{{asset('uploads/toolan.png')}}" alt="logo">
+        <img id="logoImage" src="{{asset('/uploads/toolan.png')}}" alt="logo">
         <br><br>
         <div class="login_form">
             <div id="login_form_header">

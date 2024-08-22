@@ -13,8 +13,9 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script src="asset{{'js/home.js'}}"></script>
-<script src="asset{{'js/post.js'}}"></script>
+    <script src="{{ asset('js/home.js') }}"></script>
+    <script src="{{ asset('js/post.js') }}"></script>
+
 
 </head>
 <body>
@@ -22,7 +23,7 @@
 <div class="container-fluid">
   <div class="row" id="upper-panel">
     <div class="col">
-      <img src="uploads/toolan.png" alt="logo" id="logo">
+      <img src="/uploads/toolan.png" alt="logo" id="logo">
     </div>
     <div class="col-6" id="search-div">
 
@@ -41,7 +42,7 @@
           <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
         </div>
 
-          <img src="{{ Auth::user()->profile_picture }}" class='pfpNav' data-userid="{{ Auth::user()->id_user }}">
+          <img src="/{{ Auth::user()->profile_picture }}" class='pfpNav' data-userid="{{ Auth::user()->id_user }}">
 
       </div>
     </div>

@@ -24,4 +24,9 @@ class AuthService
         Auth::logout();
         return redirect('/login');
     }
+
+    public function isUserVerified(){
+        Log::info('Checking if user with username '.Auth::user()->username.' is verified');
+        return Auth::user()->verified;
+    }
 }

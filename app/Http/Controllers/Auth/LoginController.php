@@ -13,23 +13,13 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     private $authService;
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+  //  protected $redirectTo = '/home';
+
+
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
-//        $this->middleware('guest')->except('logout');
-//        $this->middleware('auth')->only('logout');
     }
 
     public function login(Request $request){
@@ -40,8 +30,11 @@ class LoginController extends Controller
         if(!$auth){
             return redirect()->back()->with('failure', 'Username and password do not match');
         }
+        else if(!$this->authService->isUserVerified()){
+            return redirect()->back()->with('failure', 'Please verify your email address before logging in');
+        }
         else{
-            return redirect('/home');
+            return redirect('user/home');
         }
     }
 

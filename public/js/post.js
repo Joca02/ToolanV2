@@ -1,80 +1,86 @@
 //ucitavanje templejta posta
 var postElement;
+var isLoading=true;
+var init=true;
 $(function(){
-    $.get("post.html",function(data)
+    $.get("../post.html",function(data)
 {
     var tempContainer = $('<div>');
     tempContainer.html(data);
-  
-    postElement = tempContainer.find('.the-post'); 
+
+    postElement = tempContainer.find('.the-post');
+    isLoading=false;
+    if(init){
+        loadPosts(-1);
+        init=false;
+    }
 })
 });
 var postsLimit=3;
 var offset=0;
-var isLoading=false;
+
 function loadPosts(pageID)//ako je id=0 znaci da je home page
     {
       if(isLoading)
         return;
       isLoading=true;
-      
-      $.post(
-        "load_posts.php",{pageID:pageID,postsLimit: postsLimit, offset:offset},function(response)
+
+      $.get(
+        "/user/posts",{pageID:pageID,limit: postsLimit, offset:offset},function(response)
         {
-          for(var i=0;i<response.usernames.length;i++)
-          {
-            var newPost=postElement.clone();//pravim klon templejta jer ce se  referencom sve primeniti nad 1 elementom
-           
-            newPost.find('.pfpNav').attr('src',response.profile_pictures[i]);
-            newPost.find('.pfpNav').data('userid', response.id_users[i]);
-            newPost.attr('id',response.id_posts[i]);
-            newPost.find('.username').html("<strong>@" + response.usernames[i] + "</strong>");
-            newPost.find('.timestamp').text(response.dates[i]);
+            for (var i = 0; i < response.length; i++) {
+                var post = response[i];
 
-            
-            if( response.pictures[i]==null)//ako objava nije slika vec samo tekst
-            {
-              newPost.find('.post-content p').text(response.post_descriptions[i]);
-              newPost.find('.post-footer p').remove();
+                var newPost = postElement.clone(); // Clone the template
+
+                newPost.find('.pfpNav').attr('src', '/'+post.profile_picture);
+                newPost.find('.pfpNav').data('userid', post.id_user);
+                newPost.attr('id', post.id_post);
+                newPost.find('.username').html("<strong>@" + post.username + "</strong>");
+                newPost.find('.timestamp').text(post.date);
+
+                if (post.picture === null) {
+                    // If the post does not have a picture, only text
+                    newPost.find('.post-content p').text(post.post_description);
+                    newPost.find('.post-footer p').remove();
+                } else {
+                    // If the post has a picture
+                    newPost.find('.post-content p').remove();
+                    newPost.find('.post-content').append('<img src="/' + post.picture + '" alt="Post Image" class="post-picture">');
+                    newPost.find('.post-footer p').html('<u>Description:</u> ' + post.post_description);
+                }
+
+                if (post.isUserOwner) {
+                    // Add delete button if the current user is the owner
+                    newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
+                }
+
+                $("#post-container").append(newPost); // Add the new post to the container
             }
-              
-            else  //ako objava jeste slika
-            {
-              newPost.find('.post-content p').remove();
-              newPost.find('.post-content').append('<img src="' + response.pictures[i] + '" alt="Post Image" class="post-picture">');
-              newPost.find('.post-footer p').html('<u>Description:</u> ' + response.post_descriptions[i]);
 
-            }
-          
-            if(response.isUserOwner==true) //dodajem mogucnost brisanja objave
-              newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
+            var newPosts = $("#post-container").children('.the-post');
 
-            $("#post-container").append(newPost);
-          }
-          var newPosts = $("#post-container").children('.the-post');
-
-           
             newPosts.each(function () {
                 var postID = $(this).prop('id');
                 var likesCountContainer = $(this).find('.likesCount');
                 var commentsCountContainer = $(this).find('.commentsCount');
                 var likeButton = $(this).find('.like');
-               
-          
-                $.post(
-                "get_post_info.php",
-                { postID: postID },
-                function (response) {
-                    if (response.isLiked) {
-                        likeButton.removeClass('fa-heart-o').addClass('fa-heart');
-                    } else {
-                        likeButton.removeClass('fa-heart').addClass('fa-heart-o');
-                    }
-                    likesCountContainer.html(response.likesCount+" Likes");
-                    commentsCountContainer.html(response.commentsCount+" Comments");
-                   
-                }
-            );
+
+
+            //     $.post(
+            //     "get_post_info.php",
+            //     { postID: postID },
+            //     function (response) {
+            //         if (response.isLiked) {
+            //             likeButton.removeClass('fa-heart-o').addClass('fa-heart');
+            //         } else {
+            //             likeButton.removeClass('fa-heart').addClass('fa-heart-o');
+            //         }
+            //         likesCountContainer.html(response.likesCount+" Likes");
+            //         commentsCountContainer.html(response.commentsCount+" Comments");
+            //
+            //     }
+            // );
         });
           offset+=postsLimit;
           isLoading=false;
@@ -82,7 +88,8 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
       );
     }
 
-    
+
+
     $(document).on('click', '.pfpNav', function() {
         //nalazim userID trimovanjem sourca slike, jer je svaka slika u formatu userID.png/jpg/jpeg..
         var srcValue = $(this).attr('src');
@@ -94,14 +101,14 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
         else
           {
               var alternativeUserID = $(this).data('userid');
-      
+
               if (!isNaN(alternativeUserID) && alternativeUserID !== '') {
                   window.location.href = "profile.php?id=" + alternativeUserID;
               } else {
-                  console.log("Unable to find user ID using alternative method");   
+                  console.log("Unable to find user ID using alternative method");
               }
           }
-      
+
     });
 
    //lajk event
@@ -135,7 +142,7 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
     $("#commentText").on('input',function(){
       buttonEnabled(txtArea,subm);
     })
-      
+
     $('#commentModal').modal('show');
     var btn=$("#submitComment");
     btn.unbind("click");  //svaki put kada se klikne comment ico novi event handler se dodaje dugmetu koje submituje com pa moram da ga unbindujem
@@ -164,7 +171,7 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
         );
       }
       else alert("Comment can have a maximum of 30 characters!");
-     
+
     });
   });
 
@@ -194,7 +201,7 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
         }
       }
       else modalBody.append('<p>This post has 0 likes.</p>');
-      
+
 
       $('#windowModal').modal('show');
     })
@@ -227,7 +234,7 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
         }
       }
       else modalBody.append('<p>This post has 0 comments.</p>');
-      
+
       $('#windowModal').modal('show');
     })
   })
@@ -264,7 +271,7 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
     suggestionBox.empty();
     if(characters.length > 0) {
       $.get("filter_search.php?name=" + characters, function(response) {
-        
+
         for (var i = 0; i < response.length; i++) {
             const name=response[i].name;
 
@@ -278,4 +285,3 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
     }
   });
   })
-  

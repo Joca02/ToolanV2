@@ -16,7 +16,7 @@
 <body>
 <div id="global_login_container">
     <div id="around_login_form">
-        <img id="logoImage" src="uploads/toolan.png" alt="">
+        <img id="logoImage" src="/uploads/toolan.png" alt="">
         <br><br>
         <div id="register_form" class="login_form">
             <div id="login_form_header">
@@ -63,7 +63,7 @@
 
             $.ajax({
                 url: '{{ route("checkInputField") }}',
-                method: 'POST',
+                method: 'GET',
                 data: {
                     _token: '{{ csrf_token() }}',
                     fieldName: fieldName,

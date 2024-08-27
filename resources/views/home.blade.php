@@ -37,7 +37,7 @@
             <span class='currUserName'>{{ Auth::user()->name }}</span>
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="profile.php?id={{ Auth::user()->id_user }}">View Profile</a>
+            <a class="dropdown-item" href="profile?id={{ Auth::user()->id_user }}">View Profile</a>
           <a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
           <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
         </div>
@@ -137,13 +137,13 @@
   $(function(){
 
     var pageID=0;
-
-    loadPosts(pageID);
+    var route="/user/posts"
+    loadPosts(route,pageID);
 
     $(window).scroll(function() {
 
         if (Math.ceil($(document).height() - $(window).scrollTop()) <= $(window).height()+50) {
-              loadPosts(pageID);
+              loadPosts(route,pageID);
         }
     });
 

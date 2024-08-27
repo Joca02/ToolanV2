@@ -12,8 +12,12 @@ class PostDto
     public $picture;
     public $isUserOwner;
     public $id_user;
+    public $isPostLiked;
+    public $likesCount;
+    public $commentsCount;
 
-    public function __construct($post, $currentUserId)
+
+    public function __construct($post, $currentUserId,$isPostLiked,$likesCount,$commentsCount)
     {
         $this->id_post = $post->id_post;
         $this->profile_picture = $post->profile_picture;
@@ -23,5 +27,8 @@ class PostDto
         $this->picture = $post->picture;
         $this->isUserOwner = $post->id_user === $currentUserId;
         $this->id_user = $post->id_user;
+        $this->isPostLiked = $isPostLiked;
+        $this->likesCount = $likesCount;
+        $this->commentsCount = $commentsCount;
     }
 }

@@ -31,12 +31,12 @@ class PostController extends Controller
         );
     }
 
-    public function getPostsFromUser(Request $request,$userId){
+    public function getPostsFromUser(Request $request){
         return $this->postService->getPosts(
             PostLoadType::PROFILE,
             $request->offset,
             $request->limit,
-            $userId
+            $request->userId
         );
     }
 

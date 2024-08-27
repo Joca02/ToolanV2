@@ -1,109 +1,101 @@
 //ucitavanje templejta posta
 var postElement;
-var isLoading=true;
+var isLoading=false;
 var init=true;
-$(function(){
-    $.get("../post.html",function(data)
-{
-    var tempContainer = $('<div>');
-    tempContainer.html(data);
-
-    postElement = tempContainer.find('.the-post');
-    isLoading=false;
-    if(init){
-        loadPosts(-1);
-        init=false;
-    }
-})
-});
+// $(function(){
+//     $.get("../post.html",function(data)
+// {
+//     var tempContainer = $('<div>');
+//     tempContainer.html(data);
+//
+//     postElement = tempContainer.find('.the-post');
+//     isLoading=false;
+//     if(init){
+//         loadPosts(-1);
+//         init=false;
+//     }
+// })
+//});
 var postsLimit=3;
-var offset=0;
+var offset = 0;
+var isLoading = false;
+var postElement = null;
 
-function loadPosts(pageID)//ako je id=0 znaci da je home page
-    {
-      if(isLoading)
-        return;
-      isLoading=true;
+function loadPosts(route, pageID) {
+    if (isLoading) return;  // Prevent further requests while loading
 
-      $.get(
-        "/user/posts",{pageID:pageID,limit: postsLimit, offset:offset},function(response)
-        {
-            for (var i = 0; i < response.length; i++) {
-                var post = response[i];
+    isLoading = true;  // Set isLoading to true to block other requests
 
-                var newPost = postElement.clone(); // Clone the template
+    $.get("/post.html")
+        .done(function(data) {
+            var tempContainer = $('<div>');
+            tempContainer.html(data);
 
-                newPost.find('.pfpNav').attr('src', '/'+post.profile_picture);
-                newPost.find('.pfpNav').data('userid', post.id_user);
-                newPost.attr('id', post.id_post);
-                newPost.find('.username').html("<strong>@" + post.username + "</strong>");
-                newPost.find('.timestamp').text(post.date);
+            postElement = tempContainer.find('.the-post');
 
-                if (post.picture === null) {
-                    // If the post does not have a picture, only text
-                    newPost.find('.post-content p').text(post.post_description);
-                    newPost.find('.post-footer p').remove();
-                } else {
-                    // If the post has a picture
-                    newPost.find('.post-content p').remove();
-                    newPost.find('.post-content').append('<img src="/' + post.picture + '" alt="Post Image" class="post-picture">');
-                    newPost.find('.post-footer p').html('<u>Description:</u> ' + post.post_description);
-                }
+            // Fetch posts after loading the template
+            $.get(route, { userId: pageID, limit: postsLimit, offset: offset })
+                .done(function(response) {
+                    for (var i = 0; i < response.length; i++) {
+                        var post = response[i];
+                        console.log(post)
+                        // Check if the post is already in the container to prevent duplicates
+                        if ($('#' + post.id_post).length === 0) {
+                            var newPost = postElement.clone(); // Clone the template
 
-                if (post.isUserOwner) {
-                    // Add delete button if the current user is the owner
-                    newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
-                }
+                            newPost.attr('id', post.id_post);
+                            newPost.find('.pfpNav').attr('src', '/' + post.profile_picture);
+                            newPost.find('.pfpNav').data('userid', post.id_user);
+                            newPost.find('.username').html("<strong>@" + post.username + "</strong>");
+                            newPost.find('.timestamp').text(post.date);
+                            newPost.find('.likesCount').html(post.likesCount + " Likes");
+                            newPost.find('.commentsCount').html(post.commentsCount + " Comments");
 
-                $("#post-container").append(newPost); // Add the new post to the container
-            }
+                            var likeButton = newPost.find('.like');
+                            if (post.isLiked) {
+                                likeButton.removeClass('fa-heart-o').addClass('fa-heart');
+                            } else {
+                                likeButton.removeClass('fa-heart').addClass('fa-heart-o');
+                            }
 
-            var newPosts = $("#post-container").children('.the-post');
+                            if (post.picture === null) {
+                                newPost.find('.post-content p').text(post.post_description);
+                                newPost.find('.post-footer p').remove();
+                            } else {
+                                newPost.find('.post-content p').remove();
+                                newPost.find('.post-content').append('<img src="/' + post.picture + '" alt="Post Image" class="post-picture">');
+                                newPost.find('.post-footer p').html('<u>Description:</u> ' + post.post_description);
+                            }
 
-            newPosts.each(function () {
-                var postID = $(this).prop('id');
-                var likesCountContainer = $(this).find('.likesCount');
-                var commentsCountContainer = $(this).find('.commentsCount');
-                var likeButton = $(this).find('.like');
+                            if (post.isUserOwner) {
+                                newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
+                            }
 
-
-            //     $.post(
-            //     "get_post_info.php",
-            //     { postID: postID },
-            //     function (response) {
-            //         if (response.isLiked) {
-            //             likeButton.removeClass('fa-heart-o').addClass('fa-heart');
-            //         } else {
-            //             likeButton.removeClass('fa-heart').addClass('fa-heart-o');
-            //         }
-            //         likesCountContainer.html(response.likesCount+" Likes");
-            //         commentsCountContainer.html(response.commentsCount+" Comments");
-            //
-            //     }
-            // );
+                            $("#post-container").append(newPost); // Add the new post to the container
+                        }
+                    }
+                    offset += postsLimit;
+                    isLoading = false;  // Allow further requests
+                });
         });
-          offset+=postsLimit;
-          isLoading=false;
-        }
-      );
-    }
-
+}
 
 
     $(document).on('click', '.pfpNav', function() {
         //nalazim userID trimovanjem sourca slike, jer je svaka slika u formatu userID.png/jpg/jpeg..
         var srcValue = $(this).attr('src');
-        var idDotPng=srcValue.replace('uploads/profile_pictures/', '');
+        var idDotPng=srcValue.replace('/uploads/profile_pictures/', '');
         var arr=idDotPng.split('.');
         var userID=arr[0];
+        console.log(userID)
         if(userID!="default")
-          window.location.href = "profile.php?id="+userID;
+          window.location.href = "/user/profile?id="+userID;
         else
           {
               var alternativeUserID = $(this).data('userid');
-
+                console.log("ALT "+alternativeUserID)
               if (!isNaN(alternativeUserID) && alternativeUserID !== '') {
-                  window.location.href = "profile.php?id=" + alternativeUserID;
+                  window.location.href = "/user/profile?id=" + alternativeUserID;
               } else {
                   console.log("Unable to find user ID using alternative method");
               }
@@ -270,12 +262,12 @@ function loadPosts(pageID)//ako je id=0 znaci da je home page
     var characters = $(this).val();
     suggestionBox.empty();
     if(characters.length > 0) {
-      $.get("filter_search.php?name=" + characters, function(response) {
+      $.get("/filter-users?name=" + characters, function(response) {
 
         for (var i = 0; i < response.length; i++) {
             const name=response[i].name;
 
-            const suggestionItem = $("<a href='profile.php?id="+response[i].id_user+"'  class='list-group-item list-group-item-action list-group-item-light'><img src='" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
+            const suggestionItem = $("<a href='profile?id="+response[i].id_user+"'  class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
 
             suggestionBox.append(suggestionItem);
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -27,10 +28,12 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/user/home', [App\Http\Controllers\UserController::class, 'index'])->name('home');
+    Route::get('/user/profile', [App\Http\Controllers\UserController::class, 'showProfile'])->name('profile');
     Route::get('/logout',[LoginController::class,'logout'])->name('logout');
     Route::get('/admin/posts',[PostController::class,'getPostsFromAllUsers'])->name('allPosts');
     Route::get('/user/posts',[PostController::class,'getPostsFromFollowedUsers'])->name('followedPosts');
-    Route::get("/profile/{userId}",[PostController::class,'getPostsFromUser'])->name('profilePosts');
+    Route::get("/profile/posts",[PostController::class,'getPostsFromUser'])->name('profilePosts');
+    Route::get('/filter-users',[UserController::class,'filterUsers'])->name('filterUsers');
 });
 
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Dto\PostDto;
 use App\Enum\PostLoadType;
+use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,7 +39,12 @@ class PostService
             ->offset($offset)
             ->get();
 
-        $postsDto=$posts->map(function($post){ return new PostDto($post,Auth::id());});
+        $postsDto = $posts->map(function ($post) {
+            $isLiked=$this->isPostLiked($post->id_post);
+            $likesCount=$this->getLikesCount($post->id_post);
+            $commentsCount=$this->getCommentsCount($post->id_post);
+            return new PostDto($post, Auth::id(), $isLiked, $likesCount, $commentsCount);
+        });
         return response()->json($postsDto);
     }
 
@@ -60,25 +67,54 @@ class PostService
             ->get();
 
         $postsDto = $posts->map(function ($post) {
-            return new PostDto($post, Auth::id());
+            $isLiked=$this->isPostLiked($post->id_post);
+            $likesCount=$this->getLikesCount($post->id_post);
+            $commentsCount=$this->getCommentsCount($post->id_post);
+            return new PostDto($post, Auth::id(), $isLiked, $likesCount, $commentsCount);
         });
 
         return response()->json($postsDto);
     }
 
     public function getUserPosts(int $userId, int $offset, int $limit){
-        $posts = Post::where('id_user', $userId)
-            ->orderBy('id_post', 'DESC')
+        $posts = Post::join('users', 'users.id_user', '=', 'posts.id_user')
+            ->where('posts.id_user', $userId)
+            ->select([
+                'posts.id_post',
+                'users.profile_picture',
+                'users.username',
+                'posts.post_description',
+                'users.id_user',
+                'posts.date',
+                'posts.picture'
+            ])
+            ->orderBy('posts.id_post', 'DESC')
             ->limit($limit)
             ->offset($offset)
             ->get();
 
         $postsDto = $posts->map(function ($post) {
-            return new PostDto($post, Auth::id());
+            $isLiked=$this->isPostLiked($post->id_post);
+            $likesCount=$this->getLikesCount($post->id_post);
+            $commentsCount=$this->getCommentsCount($post->id_post);
+            return new PostDto($post, Auth::id(), $isLiked, $likesCount, $commentsCount);
         });
 
         return response()->json($postsDto);
     }
 
+    private function isPostLiked($postId){
+        return Like::where('id_post', $postId)
+            ->where('id_user', Auth::id())
+            ->exists();
+    }
+
+    private function getLikesCount($postId){
+        return Like::where('id_post', $postId)->count();
+    }
+
+    private function getCommentsCount($postId){
+        return Comment::where('id_post', $postId)->count();
+    }
 
 }

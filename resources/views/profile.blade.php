@@ -51,6 +51,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
@@ -128,6 +129,11 @@
 </div>
 
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $(function() {
         var pageID = '{{ $userProfile->id_user }}';
         let route="/profile/posts";
@@ -140,50 +146,48 @@
             }
         });
 
-        {{--    function followButtonTextChange() {--}}
-        {{--        var btn = $("#addORedit_btn");--}}
-        {{--        var currentUserID = '{{ $currentUser->id_user }}';--}}
-        {{--        var profileID = '{{ $userProfile->id_user }}';--}}
+        function followButtonTextChange() {
+                var btn = $("#addORedit_btn");
+                var currentUserID = '{{ $currentUser->id_user }}';
+                var profileID = '{{ $userProfile->id_user }}';
 
-        {{--        if (profileID == currentUserID) {--}}
-        {{--            btn.html("Edit profile");--}}
-        {{--        } else {--}}
-        {{--            $.get("follow.php", { followed: profileID }, function(response) {--}}
-        {{--                if (response == "FOLLOWING")--}}
-        {{--                    btn.html("Unfollow").css("background-color", "grey");--}}
-        {{--                else if (response == "FOLLOWING ME")--}}
-        {{--                    btn.html("Follow Back").css("background-color", "#db4ba6");--}}
-        {{--                else--}}
-        {{--                    btn.html("Follow").css("background-color", "#db4ba6");--}}
-        {{--            });--}}
-        {{--        }--}}
-        {{--    }--}}
+                if (profileID == currentUserID) {
+                    btn.html("Edit profile");
+                } else {
+                    $.get("/user/follow", { id: profileID }, function(response) {
+                        if (response == "FOLLOWING")
+                            btn.html("Unfollow").css("background-color", "grey");
+                        else if (response == "FOLLOWING ME")
+                            btn.html("Follow Back").css("background-color", "#db4ba6");
+                        else
+                            btn.html("Follow").css("background-color", "#db4ba6");
+                    });
+                }
+            }
 
-        {{--    followButtonTextChange();--}}
+        followButtonTextChange();
 
-        {{--    --}}{{--function handleEditOrFollow() {--}}
-        {{--    --}}{{--    var currentUserID = '{{ $currentUser->id_user }}';--}}
-        {{--    --}}{{--    var profileID = '{{ $userProfile->id_user }}';--}}
+        function handleEditOrFollow() {
+                var currentUserID = '{{ $currentUser->id_user }}';
+                var profileID = '{{ $userProfile->id_user }}';
 
-        {{--    --}}{{--    if (profileID == currentUserID) {--}}
-        {{--    --}}{{--      //  window.location.href = "{{ route('editProfile') }}";--}}
-        {{--    --}}{{--    } else {--}}
-        {{--    --}}{{--        $.post("follow.php", { followed: profileID }, function(response) {--}}
-        {{--    --}}{{--            if(response == "success") {--}}
-        {{--    --}}{{--                followButtonTextChange();--}}
-        {{--    --}}{{--            }--}}
-        {{--    --}}{{--        });--}}
-        {{--    --}}{{--    }--}}
-        {{--    --}}{{--}--}}
+                if (profileID == currentUserID) {
+                  {{--//  window.location.href = "{{ route('editProfile') }}";--}}
+                } else {
+                    $.post("/user/follow", { id: profileID }, function(response) {
+                            followButtonTextChange();
+                    });
+                }
+            }
 
-        {{--    $("#addORedit_btn").click(handleEditOrFollow);--}}
+        $("#addORedit_btn").click(handleEditOrFollow);
 
-        {{--    var decodedDescription = decodeURIComponent("{{ $userProfile->prof_description }}");--}}
-        {{--    if (decodedDescription.length > 0)--}}
-        {{--        $("#profileDescription").text(decodedDescription);--}}
-        {{--    else--}}
-        {{--        $("#profileDescription").text("No profile description");--}}
-        {{--});--}}
+        var decodedDescription = decodeURIComponent("{{ $userProfile->prof_description }}");
+        if (decodedDescription.length > 0)
+                $("#profileDescription").text(decodedDescription);
+        else
+                $("#profileDescription").text("No profile description");
+
     });
 </script>
 

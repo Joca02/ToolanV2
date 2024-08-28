@@ -29,4 +29,14 @@ class UserController extends Controller
         $userProfile=$this->userService->getUser($request->id);
         return view('profile', compact('userProfile', 'currentUser'));
     }
+
+    public function checkFollowingStatus(Request $request){
+       $followingStatus= $this->userService->checkFollowingStatus($request->id);
+       return response()->json($followingStatus);
+    }
+
+    public function followAction(Request $request){
+        $this->userService->followAction($request->id);
+        return response()->noContent();
+    }
 }

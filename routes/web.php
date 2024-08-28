@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/posts',[PostController::class,'getPostsFromFollowedUsers'])->name('followedPosts');
     Route::get("/profile/posts",[PostController::class,'getPostsFromUser'])->name('profilePosts');
     Route::get('/filter-users',[UserController::class,'filterUsers'])->name('filterUsers');
+    Route::post('/user/follow',[UserController::class,'followAction'])->name('followAction');
+    Route::get('/user/follow',[UserController::class,'checkFollowingStatus'])->name('checkFollowingStatus');
 });
 
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');

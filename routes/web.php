@@ -36,6 +36,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/filter-users',[UserController::class,'filterUsers'])->name('filterUsers');
     Route::post('/user/follow',[UserController::class,'followAction'])->name('followAction');
     Route::get('/user/follow',[UserController::class,'checkFollowingStatus'])->name('checkFollowingStatus');
+    Route::post('/user/like',[UserController::class,'likeAction'])->name('likeAction');
+    Route::get('/user/like',[UserController::class,'getLikes'])->name('getLikes');
+    Route::post('/user/comment',[UserController::class,'postComment'])->name('postComment');
+    Route::get('/user/comment',[UserController::class,'getComments'])->name('getComments');
+
 });
 
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');

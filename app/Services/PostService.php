@@ -117,4 +117,5 @@ class PostService
         return Comment::where('id_post', $postId)->count();
     }
 
+
 }

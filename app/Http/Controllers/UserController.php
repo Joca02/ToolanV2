@@ -39,4 +39,24 @@ class UserController extends Controller
         $this->userService->followAction($request->id);
         return response()->noContent();
     }
+
+    public function likeAction(Request $request){
+        $likeStatus=$this->userService->likeAction($request->postId);
+        return response()->json($likeStatus);
+    }
+
+    public function getLikes(Request $request){
+        $likedByUsers=$this->userService->getLikes($request->postId);
+        return response()->json($likedByUsers);
+    }
+
+    public function postComment(Request $request){
+        $resp=$this->userService->postComment($request->postId,$request->comment);
+        return response()->json($resp);
+    }
+
+    public function getComments(Request $request){
+        $comments=$this->userService->getComments($request->postId);
+        return response()->json($comments);
+    }
 }

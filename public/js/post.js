@@ -1,26 +1,8 @@
-//ucitavanje templejta posta
-var postElement;
-var isLoading=false;
-var init=true;
-// $(function(){
-//     $.get("../post.html",function(data)
-// {
-//     var tempContainer = $('<div>');
-//     tempContainer.html(data);
-//
-//     postElement = tempContainer.find('.the-post');
-//     isLoading=false;
-//     if(init){
-//         loadPosts(-1);
-//         init=false;
-//     }
-// })
-//});
 var postsLimit=3;
 var offset = 0;
 var isLoading = false;
 var postElement = null;
-
+var likeCounts={};
 function loadPosts(route, pageID) {
     if (isLoading) return;  // Prevent further requests while loading
 
@@ -38,8 +20,8 @@ function loadPosts(route, pageID) {
                 .done(function(response) {
                     for (var i = 0; i < response.length; i++) {
                         var post = response[i];
-                        console.log(post)
-                        // Check if the post is already in the container to prevent duplicates
+
+                        likeCounts[post.id_post] = post.likesCount;
                         if ($('#' + post.id_post).length === 0) {
                             var newPost = postElement.clone(); // Clone the template
 
@@ -52,7 +34,7 @@ function loadPosts(route, pageID) {
                             newPost.find('.commentsCount').html(post.commentsCount + " Comments");
 
                             var likeButton = newPost.find('.like');
-                            if (post.isLiked) {
+                            if (post.isPostLiked) {
                                 likeButton.removeClass('fa-heart-o').addClass('fa-heart');
                             } else {
                                 likeButton.removeClass('fa-heart').addClass('fa-heart-o');
@@ -104,24 +86,28 @@ function loadPosts(route, pageID) {
     });
 
    //lajk event
-  $(document).on('click', '.like', function(){
+$(document).on('click', '.like', function(){
     var postID = $(this).closest('.the-post').prop('id');
-    var likeButton = $(this); // referenca na kliknutu ikonicu like
+    var likeButton = $(this); // reference to the clicked like icon
+
     $.post(
-        "like.php",
-        { postID: postID },
+        "/user/like",
+        {
+            postId: postID,
+        },
         function(response) {
-          console.log(response.likeStatus);
-            if (response.likeStatus == "liked") {
+            console.log(response);
+            if (response == "liked") {
                 likeButton.removeClass('fa-heart-o').addClass('fa-heart');
-            } else if (response.likeStatus == "notLiked") {
+                likeCounts[postID]++;
+            } else if (response == "notLiked") {
                 likeButton.removeClass('fa-heart').addClass('fa-heart-o');
+                likeCounts[postID]--;
             }
-            console.log(response.likesCount);
-            likeButton.closest('.the-post').find('.likesCount').html(response.likesCount+" Likes");
+            likeButton.closest('.the-post').find('.likesCount').html(likeCounts[postID]+" Likes");
         }
     );
-  })
+})
 
   //comment event
   $(document).on('click', '.comment', function(){
@@ -144,7 +130,7 @@ function loadPosts(route, pageID) {
       if (comment.length<30)
       {
           $.post(
-          "post_comment.php",{postID:postID,comment:comment},
+          "/user/comment",{postId:postID,comment:comment},
           function(response){
             if(response=="success")
             {
@@ -154,10 +140,6 @@ function loadPosts(route, pageID) {
               var commentsCountContainer = postElement.find('.commentsCount');
               var currentCommentCount = parseInt(commentsCountContainer.text().split(' ')[0]);
               commentsCountContainer.text((currentCommentCount + 1) + " Comments");
-            }
-            else
-            {
-              alert("There was an error posting your comment.");
             }
           }
         );
@@ -171,7 +153,7 @@ function loadPosts(route, pageID) {
   //ko je lajkovao
   $(document).on('click', '.likesCount', function(){
     var postID = $(this).closest('.the-post').prop('id');
-    $.get("get_likers.php",{postID:postID},
+    $.get("/user/like",{postId:postID},
     function(response)
     {
       var modalBody = $('#windowModalBody');
@@ -183,13 +165,12 @@ function loadPosts(route, pageID) {
         {
           modalBody.append("<div class='d-flex align-items-center justify-content-between mb-2'>" +
     "<div class='d-flex align-items-center'>" +
-    "<a href='profile.php?id=" + response[i].id_user + "' style='display: inline-block; width: " + (60) + "px;'>" +
-    "<img src='" + response[i].profile_picture + "' class='pfpNav' data-userid='"+response[i].id_user+"'></a>" +
+
+    "<img src='/" + response[i].profile_picture + "' class='pfpNav' data-userid='"+response[i].id_user+"'></a>" +
     "<span class='ml-2'>" + response[i].name + "</span>" +
     "</div>" +
     "<i class='like fa fa-heart fa-2x'></i>" +
     "</div>");
-
         }
       }
       else modalBody.append('<p>This post has 0 likes.</p>');
@@ -203,7 +184,7 @@ function loadPosts(route, pageID) {
   //komentari prikaz
   $(document).on('click', '.commentsCount', function(){
     var postID = $(this).closest('.the-post').prop('id');
-    $.get("get_comments.php",{postID:postID},
+    $.get("/user/comment",{postId:postID},
     function(response)
     {
       var users=response.users;
@@ -217,8 +198,7 @@ function loadPosts(route, pageID) {
         for (let i = 0; i < users.length; i++) {
           modalBody.append("<div class='d-flex align-items-center justify-content-start mb-2'>" +
           "<div class='d-flex align-items-center'>" +
-          "<a href='profile.php?id=" + users[i].id_user + "' style='display: inline-block; width: " + (60) + "px;'>" +
-          "<img src='" + users[i].profile_picture + "' class='pfpNav' data-userid='"+users[i].id_user+"'></a>" +
+          "<img src='/" + users[i].profile_picture + "' class='pfpNav' data-userid='"+users[i].id_user+"'></a>" +
           "<u><span class='ml-2'>" + users[i].name + ":</span></u>" +
           "</div>" +
           "<span class='ml-2'>" + comments[i] + "</span>" +

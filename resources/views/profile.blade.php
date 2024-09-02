@@ -1,51 +1,4 @@
 
-{{--//require_once "classes.php";--}}
-{{--//require_once "database.php";--}}
-{{--//session_start();--}}
-{{--//$userProfile;--}}
-{{--//if (!isset($_SESSION['user'])) {--}}
-{{--//  header("Location: login.php");--}}
-{{--//  exit();--}}
-{{--//}--}}
-{{--//$currentUser=$_SESSION['user'];--}}
-{{--//--}}
-{{--//if(isset($_GET['id']))--}}
-{{--//{--}}
-{{--//  if($_GET['id']==$currentUser->id_user)--}}
-{{--//    $userProfile=$currentUser;--}}
-{{--//  --}}
-{{--//    else--}}
-{{--//  {--}}
-{{--//    $profile_id=$_GET['id'];--}}
-{{--//    $dbc=createConnection();--}}
-{{--//--}}
-{{--//    $query="SELECT * FROM users WHERE id_user=$profile_id";--}}
-{{--//    try{--}}
-{{--//      $result=mysqli_query($dbc,$query);--}}
-{{--//      if(mysqli_num_rows($result)==1)--}}
-{{--//      {--}}
-{{--//        $row=mysqli_fetch_assoc($result);--}}
-{{--//                  --}}
-{{--//        $userProfile=generateUser($row);--}}
-{{--//      }--}}
-{{--//      else--}}
-{{--//        error_log("Several users with same id in profile.php Error");--}}
-{{--//    }catch(Exception $e)--}}
-{{--//    {--}}
-{{--//      error_log("Exception caught in finding user id ".$e);--}}
-{{--//    }--}}
-{{--//    finally{--}}
-{{--//      closeConnection($dbc);--}}
-{{--//    }--}}
-{{--//    --}}
-{{--//  }--}}
-{{--// --}}
-{{--//}--}}
-{{--//--}}
-{{--//!---->--}}
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,7 +68,41 @@
         <div class="col">
         </div>
     </div>
-
+    <!-- ADD COMMENT MODAL -->
+    <div id="commentModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Comment</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <textarea id="commentText" class="form-control" rows="4" placeholder="Type your comment here..."></textarea>
+                </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="submitComment">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--MODAL-->
+    <div class="modal fade" id="windowModal" tabindex="-1" role="dialog" aria-labelledby="windowModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="windowModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="windowModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
     <div>
         <div class="row">
             <div class="col">

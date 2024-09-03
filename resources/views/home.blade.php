@@ -167,38 +167,55 @@
       buttonEnabled(txtArea,subm);
     })
 
-    $("#confirm-post").click(function(){
-      var txt = $("#quick-post").val();
-            var formData = new FormData();
+      $("#confirm-post").click(function(){
+          var txt = $("#quick-post").val();
+          var formData = new FormData();
 
-            formData.append('post_description', txt);
+          formData.append('post_description', txt);
 
-            var fileInput = document.getElementById('picturePost');
-            if (fileInput.files.length > 0) {
-                formData.append('picturePost', fileInput.files[0]);
-            }
-            $.ajax({
-                url: 'add_post.php',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response == "success") {
-                        alert("Post has been successfully added!");
-                        $("#quick-post").val("");
-                        buttonEnabled(txtArea, subm);
-                    }else if(response=="file_failure")
-                    {
-                      alert("Please use a different picture format.");
-                    }
-                     else {
-                        alert("There was an error adding the post, please try again later.");
-                    }
-                }
-            });
-    });
-});
+          var fileInput = document.getElementById('picturePost');
+          if (fileInput.files.length > 0) {
+              formData.append('picturePost', fileInput.files[0]);
+          }
+
+          $.ajax({
+              url: '/user/post',
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              success: function (response) {
+                  if (response == "success") {
+                      alert("Post has been successfully added!");
+                      $("#quick-post").val("");
+                      fileInput.value = "";
+                  } else {
+                      alert("There was an error adding the post, please try again later.");
+                  }
+              },
+              error: function (xhr) {
+                  if (xhr.status === 422) { // Validation error
+                      var errors = xhr.responseJSON.errors;
+                      var errorMessage = "Validation Error:\n";
+
+                      for (var key in errors) {
+                          if (errors.hasOwnProperty(key)) {
+                              errorMessage += errors[key].join("\n") + "\n";
+                          }
+                      }
+                      fileInput.value = "";
+                      alert(errorMessage); // Display the validation error messages
+                  } else {
+                      alert("There was an error processing your request.");
+                  }
+              }
+          });
+      });
+
+  });
 
 </script>
 

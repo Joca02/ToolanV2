@@ -117,5 +117,30 @@ class PostService
         return Comment::where('id_post', $postId)->count();
     }
 
+    public function createPost($description, $picture = null)
+    {
+        $userId = Auth::id();
+        $fileName = null;
+
+        if ($picture) {
+            $extension = $picture->getClientOriginalExtension();
+
+            $nextPostID =Post::max('id_post') + 1;
+            $fileName = 'uploads/posts/' . $nextPostID . '.' . $extension;
+
+            $picture->move(public_path('uploads/posts'), $nextPostID . '.' . $extension);
+        }
+
+        $post = Post::insert([
+            'id_user' => $userId,
+            'post_description' => $description,
+            'picture' => $fileName,
+            'date' => now(),
+            'creation_time' => now(),
+        ]);
+
+        return $post;
+    }
+
 
 }

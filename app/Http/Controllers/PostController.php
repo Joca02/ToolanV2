@@ -6,6 +6,7 @@ use App\Enum\PostLoadType;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -39,5 +40,26 @@ class PostController extends Controller
             $request->userId
         );
     }
+
+    public function addPost(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'post_description' => 'required|string|max:255',
+            'picturePost' => 'nullable|mimes:jpg,jpeg,png|max:10240', // max 10MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $result = $this->postService->createPost($request->post_description, $request->picturePost);
+
+        if ($result) {
+            return response()->json('success');
+        } else {
+            return response()->json('fail', 500);
+        }
+    }
+
 
 }

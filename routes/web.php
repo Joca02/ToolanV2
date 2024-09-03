@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/like',[UserController::class,'getLikes'])->name('getLikes');
     Route::post('/user/comment',[UserController::class,'postComment'])->name('postComment');
     Route::get('/user/comment',[UserController::class,'getComments'])->name('getComments');
+    Route::post('/user/post',[PostController::class,'addPost'])->name('addPost');
 
 });
 

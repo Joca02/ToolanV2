@@ -21,28 +21,29 @@
 
 <!--NAVIGATION BAR-->
 <div class="container-fluid">
-  <div class="row" id="upper-panel">
-    <div class="col">
-      <a href="home"><img src="/uploads/toolan.png" alt="logo" id="logo"></a>
-    </div>
-    <div class="col-6" id="search-div">
-    <input type="text" class="form-control" id="search" placeholder="Search...">
-    </div>
-    <div class="usrBar col">
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <?php //echo "<span class='currUserName'>".$currentUser->name."</span>";//prikaz ulgoovanog usera
-          ?>
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="profile.php?id={{ Auth::user()->id_user }}">View Profile</a>
-            <a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
-            <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
+    <div class="row" id="upper-panel">
+        <div class="col">
+           <a href="home"><img src="/uploads/toolan.png" alt="logo" id="logo"></a>
         </div>
-          <img src="/{{ Auth::user()->profile_picture }}" class='pfpNav' data-userid="{{ Auth::user()->id_user }}">
-      </div>
+        <div class="col-6" id="search-div">
+            <input type="text" class="form-control" id="search" placeholder="Search...">
+        </div>
+        <div class="usrBar col">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class='currUserName'>{{ Auth::user()->name }}</span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="profile?id={{ Auth::user()->id_user }}">View Profile</a>
+                    <a class="dropdown-item" href="/user/edit_profile">Edit Profile</a>
+                    <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
+                </div>
+
+                <img src="/{{ Auth::user()->profile_picture }}" class='pfpNav' data-userid="{{ Auth::user()->id_user }}">
+
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
@@ -159,7 +160,7 @@
                 var profileID = '{{ $userProfile->id_user }}';
 
                 if (profileID == currentUserID) {
-                  {{--//  window.location.href = "{{ route('editProfile') }}";--}}
+                    window.location.href = "{{ route('editProfile') }}";
                 } else {
                     $.post("/user/follow", { id: profileID }, function(response) {
                             followButtonTextChange();

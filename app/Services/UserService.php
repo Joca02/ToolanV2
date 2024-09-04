@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\Following;
 use App\Models\Like;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -114,5 +115,38 @@ class UserService
         }
 
         return ['users' => $users, 'comments' => $commentsList];
+    }
+
+    public function updateProfile($name, $description, $profilePicture = null)
+    {
+        $user = Auth::user();
+        $fileName = $user->profile_picture; // Default to current profile picture
+
+        if ($profilePicture) {
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'JPG'];
+            $extension = $profilePicture->getClientOriginalExtension();
+
+            if (!in_array($extension, $allowedExtensions) || $profilePicture->getSize() > 10 * 1024 * 1024) {
+                return 'file_failure';
+            }
+
+            // Create the file name and store the file
+            $fileName = 'uploads/profile_pictures/' . $user->id_user . '.' . $extension;
+            $profilePicture->move(public_path('uploads/profile_pictures'), $user->id_user . '.' . $extension);
+        }
+
+        try {
+            User::where('id_user', $user->id_user)
+                ->update([
+                    'name' => $name,
+                    'prof_description' => $description,
+                    'profile_picture' => $fileName
+                ]);
+
+            return 'success';
+        } catch (Exception $e) {
+            error_log("Exception caught in query: " . $e);
+            return 'failure';
+        }
     }
 }

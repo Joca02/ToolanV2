@@ -30,6 +30,26 @@ class UserController extends Controller
         return view('profile', compact('userProfile', 'currentUser'));
     }
 
+    public function editProfile(Request $request){
+        return view('editProfile');
+    }
+
+    public function confirmEdit(Request $request)
+    {
+        $request->validate([
+            'editName' => 'required|string|max:255',
+            'editDescription' => 'nullable|string|max:255',
+            'editProfilePicture' => 'nullable|mimes:jpg,jpeg,png|max:10240', // max 10MB
+        ]);
+
+        $name = $request->input('editName');
+        $description = $request->input('editDescription');
+        $profilePicture = $request->file('editProfilePicture');
+
+        $result = $this->userService->updateProfile($name, $description, $profilePicture);
+
+        return response()->json($result);
+    }
     public function checkFollowingStatus(Request $request){
        $followingStatus= $this->userService->checkFollowingStatus($request->id);
        return response()->json($followingStatus);

@@ -41,6 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/user/comment',[UserController::class,'postComment'])->name('postComment');
     Route::get('/user/comment',[UserController::class,'getComments'])->name('getComments');
     Route::post('/user/post',[PostController::class,'addPost'])->name('addPost');
+    Route::get('/user/edit_profile',[UserController::class,'editProfile'])->name('editProfile');
+    Route::post('/user/edit_profile',[UserController::class,'confirmEdit'])->name('confirmEdit');
 
 });
 

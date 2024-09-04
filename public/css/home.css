@@ -10,11 +10,15 @@ html, body {
 #upper-panel{
     background-color: #2e2f30;
     height: 70px;
+    width: 100%;
+    position: fixed;
+    z-index: 1000;
 }
 
 #search-div{
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 #search{
@@ -23,18 +27,19 @@ html, body {
 
 #home-container{
     background-color: #d3d7de;
+    padding-top: 70px;
     min-height: 100%;  /*ovo treba da bude dinamicki */
 }
 
 #quick-post{
- resize: none;  
+ resize: none;
 }
 
 #confirm-post{
-    width: 200px; 
-    height: 40px; 
-    font-size: 16px;          
- 
+    width: 200px;
+    height: 40px;
+    font-size: 16px;
+
 }
 
 .btn-primary:disabled {
@@ -108,10 +113,24 @@ html, body {
 }
 
 #suggestion-box{
-    margin-left: 60px;
-    margin-right: 24%;
+    margin-left: 60px; /* Only keep this if you want the box shifted by 60px */
+    margin-right: 0; /* Remove the margin-right */
     margin-bottom: 50px;
     text-align: left;
+    position: fixed;
+    z-index: 1060;
+   width: 740px;
+}
+
+#suggestion-box a {
+
+    display: block;
+    text-decoration: none;
+    color: black;
+}
+
+#suggestion-box a:hover {
+    background-color: #f0f0f0;
 }
 
 #addORedit_btn{
@@ -147,7 +166,7 @@ html, body {
             font-size: 20px;
             color:white;
             border-radius: 8px;
-            
+
             background-color: #2e2f30;
 
         }

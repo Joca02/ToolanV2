@@ -236,24 +236,49 @@ $(document).on('click', '.like', function(){
 
 
   //pretraga korisnika
-  $(function(){
+$(function(){
     const suggestionBox = $("#suggestion-box");
-  $("#search").on("input", function(){
-    var characters = $(this).val();
-    suggestionBox.empty();
-    if(characters.length > 0) {
-      $.get("/filter-users?name=" + characters, function(response) {
 
-        for (var i = 0; i < response.length; i++) {
-            const name=response[i].name;
+    // Function to fetch and display suggestions
+    function fetchSuggestions(characters) {
+        suggestionBox.empty(); // Clear previous results
 
-            const suggestionItem = $("<a href='profile?id="+response[i].id_user+"'  class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
-
-            suggestionBox.append(suggestionItem);
-
+        if(characters.length > 0) {
+            $.get("/filter-users?name=" + characters, function(response) {
+                if (response.length > 0) {
+                    for (var i = 0; i < response.length; i++) {
+                        const suggestionItem = $("<a href='profile?id="+response[i].id_user+"' class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
+                        suggestionBox.append(suggestionItem);
+                    }
+                    suggestionBox.show(); // Show the suggestion box
+                } else {
+                    suggestionBox.hide(); // Hide if no results
+                }
+            });
+        } else {
+            suggestionBox.hide(); // Hide the box when input is empty
         }
-        suggestionBox.show();
-      });
     }
-  });
-  })
+
+    // Handle input event (typing in the search bar)
+    $("#search").on("input", function(){
+        var characters = $(this).val();
+        fetchSuggestions(characters);
+    });
+
+    // Handle click event (clicking on the search bar)
+    $("#search").on("click", function(){
+        var characters = $(this).val(); // Get the current value in the input field
+        if (characters.length > 0) {
+            fetchSuggestions(characters); // Fetch and display suggestions if characters are present
+        }
+    });
+
+    // Optionally, hide suggestion box when clicking outside
+    $(document).click(function(e) {
+        if (!$(e.target).closest("#search-div").length) {
+            suggestionBox.hide();
+        }
+    });
+});
+

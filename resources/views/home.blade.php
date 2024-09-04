@@ -55,7 +55,7 @@
     </div>
     <div class="post col-7">
     <div id="suggestion-box" class="list-group"></div>
-
+        <br>
         <div class="quick-post row">
             <div class="col-9">
             <textarea class="form-control" placeholder="Add a quick post. What's on your mind?" rows="3" id="quick-post"></textarea>

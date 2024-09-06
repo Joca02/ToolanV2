@@ -142,5 +142,12 @@ class PostService
         return $post;
     }
 
+    public function deletePost($postId){
+        $post=Post::find($postId);
+        if(!$post) return false;
+        $post->delete();
+        return true;
+    }
+
 
 }

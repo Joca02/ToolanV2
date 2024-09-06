@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,52 +40,64 @@
             </form>
             <br>
             <a href="{{route('register')}}" id="login_acc_create">Dont have an account? Sign up now!</a>
+            <br>
+            <a href="#" id="forgot_password_link" data-toggle="modal" data-target="#forgotPasswordModal" style="color:plum;">Forgot Password?</a>
         </div>
     </div>
 </div>
 
+<!-- Modal for Password Reset -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordResetForm">
+                    @csrf
+                    <div class="form-group">
+                        <label for="resetEmail">Enter your email address:</label>
+                        <input type="email" class="form-control" id="resetEmail" name="email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    // $(function(){
-    //     var btn=$("#login_submit");
-    //     var form = $("form");
-    //     btn.click(function(){
-    //         var usr=$("#username").val();
-    //         var psw=$("#password").val();
-    //         if(usr.length<2)
-    //             alert("Username must hold at least 2 characters");
-    //         else if (psw.length<2)
-    //             alert("Password must hold at least 2 characters");
-    //         else
-    //         {
-    //             $.post("check_login.php",{username:usr,password:psw},
-    //                 function(response)
-    //                 {
-    //                     if(response=="admin success")
-    //                     {
-    //                         window.location.href="admin_home.php";
-    //                     }
-    //                     else if(response=="success")
-    //                     {
-    //                         window.location.href ="home.php";
-    //                     }
-    //                     else if(response.status=="banned")
-    //                     {
-    //                         alert("You have been banned until:   "+response.date_end+"\nFor reason:\n"+response.banReason);
-    //                     }
-    //                     else
-    //                     {
-    //                         alert("Username and password don't match");
-    //                     }
-    //                 })
-    //         }
-    //
-    //     })
-    //
-    //     form.submit(function(event) {
-    //         event.preventDefault();
-    //     });
-    // })
+    $(document).ready(function() {
+        $("#passwordResetForm").on('submit', function(e) {
+            e.preventDefault();
+
+            var email = $("#resetEmail").val();
+
+            $.ajax({
+                url: '/password-reset',
+                type: 'POST',
+                data: {
+                    _token: $('input[name="_token"]').val(),
+                    email: email
+                },
+                success: function(response) {
+                    if(response.status === 'success') {
+                        alert('Password reset link has been sent to your email.');
+                        $('#forgotPasswordModal').modal('hide');
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('There was an error processing your request. Please try again later.');
+                }
+            });
+        });
+    });
 </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -43,12 +44,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/user/post',[PostController::class,'addPost'])->name('addPost');
     Route::get('/user/edit_profile',[UserController::class,'editProfile'])->name('editProfile');
     Route::post('/user/edit_profile',[UserController::class,'confirmEdit'])->name('confirmEdit');
-
+    Route::delete('/user/post',[PostController::class,'deletePost'])->name('deletePost');
 });
 
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::get('/check-input-field', [App\Http\Controllers\Auth\RegisterController::class, 'checkInputField'])->name('checkInputField');
 Route::post('/register',[App\Http\Controllers\Auth\RegisterController::class,'create'])->name('register');
+// routes/web.php
+
+// Route to handle password reset request
+Route::post('/password-reset', [ResetPasswordController::class, 'requestPasswordReset'])->name('password.reset.link');
+
+// Route to show reset password form
+Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset.form');
+
+// Route to handle reset password form submission
+Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
 
 
 

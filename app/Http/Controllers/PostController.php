@@ -61,5 +61,15 @@ class PostController extends Controller
         }
     }
 
+    public function deletePost(Request $request)
+    {
+        $result=$this->postService->deletePost($request->postId);
+        if ($result) {
+            return response()->json('success');
+        } else {
+            return response()->json('fail', 500);
+        }
+    }
+
 
 }

@@ -212,36 +212,39 @@ $(document).on('click', '.like', function(){
   })
 
   //brisanje posta
-  $(document).on('click','.delBtn',function()
-  {
-    if(confirm("Are you sure you want to delete this post? Once deleted, action cannot be undone."))
-    {
+$(document).on('click', '.delBtn', function() {
+    if (confirm("Are you sure you want to delete this post? Once deleted, action cannot be undone.")) {
         var postID = $(this).closest('.the-post').prop('id');
-        $.post("delete_post.php",{postID:postID},function(response){
-            if(response=="success")
-            {
-              alert("You have successfully deleted your post.")
-              window.location.reload();
-            }
-            else{
-              alert("There was an error during your request. Please try again later.")
+
+        $.ajax({
+            url: "/user/post", // Your endpoint URL
+            type: "DELETE",    // Specify DELETE method
+            data: { postId: postID }, // Data to send
+            success: function(response) {
+                if (response == "success") {
+                    alert("You have successfully deleted your post.");
+                    window.location.reload(); // Reload the page after successful deletion
+                } else {
+                    alert("There was an error during your request. Please try again later.");
+                }
+            },
+            error: function() {
+                alert("There was an error processing your request.");
             }
         });
-      }
-  });
+    }
+});
 
 
 
 
 
 
-  //pretraga korisnika
+//pretraga korisnika
 $(function(){
     const suggestionBox = $("#suggestion-box");
-
-    // Function to fetch and display suggestions
     function fetchSuggestions(characters) {
-        suggestionBox.empty(); // Clear previous results
+        suggestionBox.empty();
 
         if(characters.length > 0) {
             $.get("/filter-users?name=" + characters, function(response) {
@@ -250,13 +253,13 @@ $(function(){
                         const suggestionItem = $("<a href='profile?id="+response[i].id_user+"' class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
                         suggestionBox.append(suggestionItem);
                     }
-                    suggestionBox.show(); // Show the suggestion box
+                    suggestionBox.show();
                 } else {
-                    suggestionBox.hide(); // Hide if no results
+                    suggestionBox.hide();
                 }
             });
         } else {
-            suggestionBox.hide(); // Hide the box when input is empty
+            suggestionBox.hide();
         }
     }
 
@@ -268,13 +271,12 @@ $(function(){
 
     // Handle click event (clicking on the search bar)
     $("#search").on("click", function(){
-        var characters = $(this).val(); // Get the current value in the input field
+        var characters = $(this).val();
         if (characters.length > 0) {
-            fetchSuggestions(characters); // Fetch and display suggestions if characters are present
+            fetchSuggestions(characters);
         }
     });
 
-    // Optionally, hide suggestion box when clicking outside
     $(document).click(function(e) {
         if (!$(e.target).closest("#search-div").length) {
             suggestionBox.hide();

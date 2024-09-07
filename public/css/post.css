@@ -43,6 +43,10 @@
     cursor: pointer;
 }
 
+.fa-heart{
+    color: red!important;
+}
+
 .delBtn{
     width: 20px;
     height: 20px;

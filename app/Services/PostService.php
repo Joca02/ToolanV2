@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Dto\PostDto;
 use App\Enum\PostLoadType;
 use App\Models\Comment;
+use App\Models\DeactivatedUser;
 use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,8 @@ class PostService
     private function getPostsFromAllUsers(int $offset, int $limit)
     {
         $posts = Post::join('users', 'users.id_user', '=', 'posts.id_user')
+            ->leftJoin('deactivated_users', 'deactivated_users.id_user', '=', 'users.id_user')
+            ->whereNull('deactivated_users.id_user') // Exclude deactivated users
             ->select([
                 'posts.id_post',
                 'users.profile_picture',
@@ -51,7 +54,9 @@ class PostService
     private function getPostsFromFollowedUsers(int $offset, int $limit){
         $posts = Post::join('users', 'users.id_user', '=', 'posts.id_user')
             ->join('following', 'following.id_followed_user', '=', 'users.id_user')
+            ->leftJoin('deactivated_users', 'deactivated_users.id_user', '=', 'users.id_user')
             ->where('following.id_follower', Auth::id())
+            ->whereNull('deactivated_users.id_user') // Exclude deactivated users
             ->select([
                 'posts.id_post',
                 'users.profile_picture',
@@ -77,6 +82,9 @@ class PostService
     }
 
     public function getUserPosts(int $userId, int $offset, int $limit){
+        if(DeactivatedUser::where('id_user', $userId)->exists()){
+            return null;
+        }
         $posts = Post::join('users', 'users.id_user', '=', 'posts.id_user')
             ->where('posts.id_user', $userId)
             ->select([

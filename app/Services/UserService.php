@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\DeactivatedUserProps;
 use App\Enum\FollowStatus;
 use App\Enum\LikeStatus;
 use App\Models\Comment;
@@ -19,13 +20,26 @@ class UserService
     public function filterUsers($name){
         $users = User::where('name', 'LIKE', $name . '%')
             ->where('user_type', '!=', 'admin')
+            ->leftJoin('deactivated_users', 'users.id_user', '=', 'deactivated_users.id_user')
+            ->whereNull('deactivated_users.id_user')
+            ->select('users.*')
             ->get();
 
         return response()->json($users);
     }
 
     public function getUser($id){
-        return User::where('id_user', $id)->first();
+        $user = User::where('id_user', $id)->first();
+
+        $isDeactivated = DeactivatedUser::where('id_user', $user->id_user)->exists();
+
+        if ($isDeactivated) {
+            $user->name = DeactivatedUserProps::NAME->value;
+            $user->profile_picture = DeactivatedUserProps::PROFILE_PICTURE->value;
+            $user->prof_description = DeactivatedUserProps::DESCRIPTION->value;
+            $user->username = DeactivatedUserProps::USERNAME->value;
+        }
+        return $user;
     }
 
     public function deactivateAccount($userId){
@@ -105,10 +119,28 @@ class UserService
     }
 
     public function getLikes($postId){
-         return Like::where('id_post', $postId)
+        $likes = Like::where('id_post', $postId)
             ->join('users', 'likes.id_user', '=', 'users.id_user')
             ->select('users.id_user as id_user', 'users.name', 'users.profile_picture')
             ->get();
+
+        $likesTransformed = $likes->map(function ($like) {
+            $isDeactivated = DeactivatedUser::where('id_user', $like->id_user)->exists();
+            if ($isDeactivated) {
+                return [
+                    'id_user' => $like->id_user,
+                    'name' => DeactivatedUserProps::NAME->value,
+                    'profile_picture' => DeactivatedUserProps::PROFILE_PICTURE->value
+                ];
+            }
+            return [
+                'id_user' => $like->id_user,
+                'name' => $like->name,
+                'profile_picture' => $like->profile_picture
+            ];
+        });
+
+        return $likesTransformed;
     }
 
     public function postComment($postId,$comment)
@@ -126,20 +158,34 @@ class UserService
         }
     }
 
-    public function getComments($postId){
-        $comments=Comment::join('users', 'comments.id_user', '=', 'users.id_user')
+    public function getComments($postId)
+    {
+        $comments = Comment::join('users', 'comments.id_user', '=', 'users.id_user')
             ->where('comments.id_post', $postId)
             ->select('users.id_user', 'users.name', 'users.profile_picture', 'comments.comment')
             ->get();
+
         $users = [];
         $commentsList = [];
 
         foreach ($comments as $comment) {
-            $users[] = [
-                'id_user' => $comment->id_user,
-                'name' => $comment->name,
-                'profile_picture' => $comment->profile_picture
-            ];
+            // Check if the user is deactivated
+            $isDeactivated = DeactivatedUser::where('id_user', $comment->id_user)->exists();
+
+            if ($isDeactivated) {
+                $users[] = [
+                    'id_user' => $comment->id_user,
+                    'name' => DeactivatedUserProps::NAME->value,
+                    'profile_picture' => DeactivatedUserProps::PROFILE_PICTURE->value
+                ];
+            } else {
+                $users[] = [
+                    'id_user' => $comment->id_user,
+                    'name' => $comment->name,
+                    'profile_picture' => $comment->profile_picture
+                ];
+            }
+
             $commentsList[] = $comment->comment;
         }
 

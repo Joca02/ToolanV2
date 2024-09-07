@@ -33,12 +33,29 @@ class LoginController extends Controller
             return redirect()->back()->with('failure', 'Username and password do not match');
         }
         else if(!$auth->verified){
-            return redirect()->back()->with('failure', 'Please verify your email address before logging in');
+            return redirect()
+                ->back()
+                ->with('failure', 'Please verify your email address before logging in');
         }
         else if($this->authService->isUserAccountDeactivated($auth->id_user)){
             $deactivatedAccount=$this->authService->getDeactivatedAccountById($auth->id_user);
             $this->authService->sendReactivateAccountMail($deactivatedAccount->token,$auth->email);
-            return redirect()->back()->with('failure', 'Your account is deactivated, please check your email box for reactivation instructions. ');
+            return redirect()
+                ->back()
+                ->with(
+                    'failure',
+                    'Your account is deactivated, please check your email box for reactivation instructions. '
+                );
+        }
+        else if($this->authService->isUserBanned($auth->id_user)){
+            $banInfo=$this->authService->getBan($auth->id_user);
+            return redirect()
+                ->back()
+                ->with(
+                    'failure',
+                    'Your account has been banned until '.$banInfo->date_end. '. Reason behind ban: '.$banInfo->ban_reason
+                );
+
         }
         else{
             Log::info("Login success for user with username: {$auth->username}");

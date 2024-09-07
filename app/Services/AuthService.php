@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\PasswordResetMail;
 use App\Mail\ReactivateAccountMail;
+use App\Models\Ban;
 use App\Models\DeactivatedUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -60,12 +61,21 @@ class AuthService
         Mail::to($email)->send(new ReactivateAccountMail($token,$email));
     }
 
+    public function isUserBanned($idUser){
+        return Ban::where('id_user', $idUser)->exists();
+    }
+    public function getBan($idUser){
+        return Ban::where('id_user', $idUser)->first();
+    }
+
     public function resetPassword($token, $email,$password){
         $user = User::where('email', $email)->first();
 
         if (!$user || $user->verification_token !== $token) {
             Log::info("FAIL");
-            return redirect()->route('login')->with('failure', 'Invalid token, please create a new request for password reset');        }
+            return redirect()
+                ->route('login')
+                ->with('failure', 'Invalid token, please create a new request for password reset');        }
 
         $user->password = Hash::make($password);
         $user->verification_token = null;

@@ -33,11 +33,12 @@
         <br>
         <button type="button" class="btn btn-primary" id="submit">Submit changes</button>
         <button type="button" class="btn btn-secondary" id="cancel">Cancel</button>
-        <button type="button" class="btn btn-danger" id="delete">Delete Profile</button>
+        <button type="button" class="btn btn-danger" id="delete">Deactivate Profile</button>
     </form>
+    <br>
+    <button type="button" class="btn btn-warning" id="resetPasswordBtn">Change Password</button>
 
     <script>
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -45,6 +46,28 @@
         });
 
         $(function(){
+            var btnResetPassword = $("#resetPasswordBtn");
+            btnResetPassword.click(function(){
+                $.ajax({
+                    url: "/password-reset",  // Update to the actual route handling password reset requests
+                    type: "POST",
+                    data: {
+                        email: "{{ Auth::user()->email }}"  // Send the authenticated user's email
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert("Password reset link has been sent to your email.");
+                        } else {
+                            alert("Error sending reset link: " + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert("An error occurred while sending the password reset link.");
+                    }
+                });
+            });
+
+            // Your existing form handlers remain unchanged
             var name = $("#editName");
             var description = $("#editDescription");
             var profile_picture = $("#editProfilePicture");
@@ -83,17 +106,14 @@
                         success: function(response) {
                             if (response == "success") {
                                 alert("Changes have been saved successfully!");
-                               // $.get("update_session.php", function(data) {
-                                    // Redirect to updated profile
-                                    window.location.href = "/user/profile?id={{ Auth::user()->id_user }}";
-                                //});
+                                window.location.href = "/user/profile?id={{ Auth::user()->id_user }}";
                             }
                             else if(response == "file_failure") {
                                 alert("Please use a different picture format.");
                             }
                             else {
                                 alert("No changes were saved.");
-                                window.location.href = "profile.php?id={{ Auth::user()->id_user }}";
+                                window.location.href = "/user/profile?id={{ Auth::user()->id_user }}";
                             }
                         }
                     });
@@ -103,21 +123,21 @@
             var btnCancel = $("#cancel");
             btnCancel.click(function(){
                 alert("No changes were saved.");
-                window.location.href = "profile.php?id={{ Auth::user()->id_user }}";
+                window.location.href = "/user/profile?id={{ Auth::user()->id_user }}";
             });
 
             var btnDelete = $("#delete");
             btnDelete.click(function(){
-                if(confirm("Are you sure you want to delete profile? Once deleted, action cannot be undone.")) {
+                if(confirm("Are you sure you want to deactivate profile?")) {
                     var idUser = {{ Auth::user()->id_user }};
 
-                    $.get(
-                        "delete_profile.php", {id: idUser}, function(response) {
+                    $.post(
+                        "/user/deactivate-account", {id: idUser}, function(response) {
                             if(response == "success") {
-                                alert("Profile has been successfully deleted. You will be redirected to Log In page.");
-                                window.location.href = "login.php";
+                                alert("Profile has been successfully deactivated. You will be redirected to Log In page.");
+                                window.location.href = "/login";
                             } else {
-                                alert("There was an error trying to delete your profile, please try again later.");
+                                alert("There was an error trying to deactivate your profile, please try again later.");
                             }
                         }
                     );
@@ -126,7 +146,6 @@
 
         });
     </script>
-
 </div>
 </body>
 </html>

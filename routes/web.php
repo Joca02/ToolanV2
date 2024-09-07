@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/edit_profile',[UserController::class,'editProfile'])->name('editProfile');
     Route::post('/user/edit_profile',[UserController::class,'confirmEdit'])->name('confirmEdit');
     Route::delete('/user/post',[PostController::class,'deletePost'])->name('deletePost');
+    Route::post('/user/deactivate-account',[UserController::class,'deactivateAccount'])->name('deactivateAccount');
 });
 
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
@@ -61,5 +62,5 @@ Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])
 // Route to handle reset password form submission
 Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
 
-
+Route::get('/reactivate-account',[UserController::class,'reactivateAccount'])->name('reactivateAccount');
 

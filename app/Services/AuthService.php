@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Mail\PasswordResetMail;
+use App\Mail\ReactivateAccountMail;
+use App\Models\DeactivatedUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,10 +17,8 @@ class AuthService
     public function authenticate(string $username, string $password){
         $user=User::where('username',$username)->first();
         if(!$user || !Hash::check($password, $user->password)){
-            return false;
+            return null;
         }
-        Log::info("Login success for user with username: {$user->username}");
-        Auth::login($user);
         return $user;
     }
 
@@ -28,6 +28,14 @@ class AuthService
         return redirect('/login');
     }
 
+
+    public function isUserAccountDeactivated($userId){
+        return DeactivatedUser::where('id_user',$userId)->exists();
+    }
+
+    public function getDeactivatedAccountById($idUser){
+        return DeactivatedUser::where('id_user', $idUser)->first();
+    }
     public function isUserVerified(){
         Log::info('Checking if user with username '.Auth::user()->username.' is verified');
         return Auth::user()->verified;
@@ -46,6 +54,10 @@ class AuthService
         Mail::to($user->email)->send(new PasswordResetMail($token, $user->email));
 
         return ['status' => 'success', 'message' => 'Password reset link sent to your email'];
+    }
+
+    public function sendReactivateAccountMail($token,$email){
+        Mail::to($email)->send(new ReactivateAccountMail($token,$email));
     }
 
     public function resetPassword($token, $email,$password){

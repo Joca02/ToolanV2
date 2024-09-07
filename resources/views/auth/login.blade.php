@@ -14,11 +14,11 @@
 </head>
 <body>
 @if(session('success'))
-    <div class="alert alert-success" style="margin-bottom: 0">
+    <div class="alert alert-success text-center" style="margin-bottom: 0">
         {{ session('success') }}
     </div>
 @elseif(session('failure'))
-    <div class="alert alert-danger" style="margin-bottom: 0">
+    <div class="alert alert-danger text-center" style="margin-bottom: 0">
         {{ session('failure') }}
     </div>
 @endif

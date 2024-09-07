@@ -27,11 +27,25 @@ class UserController extends Controller
     public function showProfile(Request $request){
         $currentUser=Auth::user();
         $userProfile=$this->userService->getUser($request->id);
-        return view('profile', compact('userProfile', 'currentUser'));
+        return view(
+            'profile',
+            compact('userProfile', 'currentUser')
+        );
     }
 
+    public function deactivateAccount(Request $request){
+        $this->userService->deactivateAccount($request->id);
+        Auth::logout();
+        return response()->json('success');
+     }
+
+     public function reactivateAccount(Request $request){
+        return $this->userService->reactivateAccount($request->token,$request->email);
+     }
+
     public function editProfile(Request $request){
-        return view('editProfile');
+        return response()->view('editProfile')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     public function confirmEdit(Request $request)

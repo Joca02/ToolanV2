@@ -5,12 +5,14 @@ namespace App\Services;
 use App\Enum\FollowStatus;
 use App\Enum\LikeStatus;
 use App\Models\Comment;
+use App\Models\DeactivatedUser;
 use App\Models\Following;
 use App\Models\Like;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserService
 {
@@ -24,6 +26,33 @@ class UserService
 
     public function getUser($id){
         return User::where('id_user', $id)->first();
+    }
+
+    public function deactivateAccount($userId){
+        $token = Str::random(60);
+        DeactivatedUser::create([
+            'id_user' => $userId,
+            'token' => $token
+        ]);
+    }
+
+    public function reactivateAccount($token,$email){
+        $user = User::where('email', $email)->first();
+        if(!$user){
+            return redirect()
+                ->route('login')
+                ->with('failure', 'Invalid email');
+        }
+        $deactivatedUserInfo=DeactivatedUser::where('id_user', $user->id_user)->first();
+        if (!$deactivatedUserInfo || $deactivatedUserInfo->token !== $token) {
+            return redirect()
+                ->route('login')
+                ->with('failure', 'Invalid token for account reactivation');
+        }
+        $deactivatedUserInfo->delete();
+        return redirect()
+            ->route('login')
+            ->with('success', 'You have successfully reactivated your account! You can now login.');
     }
 
     public function checkFollowingStatus($id){
@@ -120,7 +149,7 @@ class UserService
     public function updateProfile($name, $description, $profilePicture = null)
     {
         $user = Auth::user();
-        $fileName = $user->profile_picture; // Default to current profile picture
+        $fileName = $user->profile_picture;
 
         if ($profilePicture) {
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'JPG'];
@@ -130,7 +159,6 @@ class UserService
                 return 'file_failure';
             }
 
-            // Create the file name and store the file
             $fileName = 'uploads/profile_pictures/' . $user->id_user . '.' . $extension;
             $profilePicture->move(public_path('uploads/profile_pictures'), $user->id_user . '.' . $extension);
         }

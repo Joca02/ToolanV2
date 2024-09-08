@@ -33,6 +33,28 @@ class UserController extends Controller
         );
     }
 
+    public function getFollowingInfo(Request $request){
+        return $this->userService->getFollowingInfo($request->id);
+    }
+
+    public function getFollowersInfo(Request $request){
+        return $this->userService->getFollowersInfo($request->id);
+    }
+
+    public function getStats(Request $request){
+        $userId=$request->id;
+
+        $followersCount = $this->userService->getFollowersCount($userId);
+        $followingCount = $this->userService->getFollowingCount($userId);
+        $postCount = $this->userService->getPostCount($userId);
+
+        return response()->json([
+            'followersCount' => $followersCount,
+            'followingCount' => $followingCount,
+            'postCount' => $postCount
+        ]);
+    }
+
     public function deactivateAccount(Request $request){
         $this->userService->deactivateAccount($request->id);
         Auth::logout();

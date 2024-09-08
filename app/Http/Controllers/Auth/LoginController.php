@@ -64,6 +64,14 @@ class LoginController extends Controller
         }
     }
 
+    public function showLoginForm()
+    {
+        if (Auth::check()) {
+            return redirect('/user/home');
+        }
+        return view('auth.login');
+    }
+
     public function logout(){
         return $this->authService->logout();
     }

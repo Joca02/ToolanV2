@@ -1,12 +1,12 @@
-var postsLimit=3;
+var postsLimit=10;
 var offset = 0;
 var isLoading = false;
 var postElement = null;
 var likeCounts={};
 function loadPosts(route, pageID) {
-    if (isLoading) return;  // Prevent further requests while loading
+    if (isLoading) return;
 
-    isLoading = true;  // Set isLoading to true to block other requests
+    isLoading = true;
 
     $.get("/post.html")
         .done(function(data) {
@@ -15,7 +15,6 @@ function loadPosts(route, pageID) {
 
             postElement = tempContainer.find('.the-post');
 
-            // Fetch posts after loading the template
             $.get(route, { userId: pageID, limit: postsLimit, offset: offset })
                 .done(function(response) {
                     for (var i = 0; i < response.length; i++) {
@@ -23,7 +22,7 @@ function loadPosts(route, pageID) {
 
                         likeCounts[post.id_post] = post.likesCount;
                         if ($('#' + post.id_post).length === 0) {
-                            var newPost = postElement.clone(); // Clone the template
+                            var newPost = postElement.clone();
 
                             newPost.attr('id', post.id_post);
                             newPost.find('.pfpNav').attr('src', '/' + post.profile_picture);
@@ -53,11 +52,11 @@ function loadPosts(route, pageID) {
                                 newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
                             }
 
-                            $("#post-container").append(newPost); // Add the new post to the container
+                            $("#post-container").append(newPost);
                         }
                     }
                     offset += postsLimit;
-                    isLoading = false;  // Allow further requests
+                    isLoading = false;
                 });
         });
 }
@@ -88,7 +87,7 @@ function loadPosts(route, pageID) {
    //lajk event
 $(document).on('click', '.like', function(){
     var postID = $(this).closest('.the-post').prop('id');
-    var likeButton = $(this); // reference to the clicked like icon
+    var likeButton = $(this);
 
     $.post(
         "/user/like",
@@ -211,19 +210,20 @@ $(document).on('click', '.like', function(){
     })
   })
 
+
   //brisanje posta
 $(document).on('click', '.delBtn', function() {
     if (confirm("Are you sure you want to delete this post? Once deleted, action cannot be undone.")) {
         var postID = $(this).closest('.the-post').prop('id');
 
         $.ajax({
-            url: "/user/post", // Your endpoint URL
-            type: "DELETE",    // Specify DELETE method
-            data: { postId: postID }, // Data to send
+            url: "/user/post",
+            type: "DELETE",
+            data: { postId: postID },
             success: function(response) {
                 if (response == "success") {
                     alert("You have successfully deleted your post.");
-                    window.location.reload(); // Reload the page after successful deletion
+                    window.location.reload();
                 } else {
                     alert("There was an error during your request. Please try again later.");
                 }
@@ -234,10 +234,6 @@ $(document).on('click', '.delBtn', function() {
         });
     }
 });
-
-
-
-
 
 
 //pretraga korisnika
@@ -263,13 +259,11 @@ $(function(){
         }
     }
 
-    // Handle input event (typing in the search bar)
     $("#search").on("input", function(){
         var characters = $(this).val();
         fetchSuggestions(characters);
     });
 
-    // Handle click event (clicking on the search bar)
     $("#search").on("click", function(){
         var characters = $(this).val();
         if (characters.length > 0) {

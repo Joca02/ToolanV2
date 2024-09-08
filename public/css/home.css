@@ -85,6 +85,30 @@ html, body {
     cursor: pointer;
 }
 
+#followers-count-container{
+    cursor: pointer;
+}
+
+#following-count-container{
+    cursor: pointer;
+}
+
+.follower-item, .following-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.modal-content {
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.modal-body {
+    max-height: 400px; /* Set a suitable height for the scrollable area */
+    overflow-y: auto;
+}
+
 .pfpProfile{
     width: 300px;
     height:300px;
@@ -113,12 +137,14 @@ html, body {
 }
 
 #suggestion-box{
-    margin-left: 60px; /* Only keep this if you want the box shifted by 60px */
-    margin-right: 0; /* Remove the margin-right */
+    margin-left: 60px;
+    margin-right: 0;
     margin-bottom: 50px;
     text-align: left;
     position: fixed;
     z-index: 1060;
+    height: 300px;
+    overflow-y: auto;
    width: 740px;
 }
 
@@ -136,7 +162,7 @@ html, body {
 #addORedit_btn{
     width: 200px;
     background-color: gray;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 
@@ -201,3 +227,20 @@ html, body {
         #btn-qpost{
             flex-wrap: wrap
         }
+
+
+#profile-stats {
+    margin: 20px 0;
+}
+
+.stat {
+    margin: 0 20px;
+    text-align: center;
+}
+
+.stat span {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+}
+

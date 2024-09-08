@@ -46,30 +46,40 @@
     </div>
 </div>
 
-
 <!--PAGE-->
 <div class="container-fluid text-center" id="home-container">
     <div class="row">
-        <div class="col">
-        </div>
+        <div class="col"></div>
         <div class="post col-7">
             <div id="suggestion-box" class="list-group"></div>
             <div class='profile-box'><br>
                 <div>
                     <img src="{{ asset($userProfile->profile_picture) }}" class='pfpProfile'>
                 </div>
-
                 <p class='profileName'>{{ $userProfile->name }}</p>
                 <p class='profileUsername'>{{ '@'.$userProfile->username }}</p>
                 <br>
                 <button type="button" class="btn btn-primary" id="addORedit_btn"></button>
+                <div id="profile-stats" class="d-flex justify-content-center">
+                    <div class="stat" id="followers-count-container">
+                        <span id="followers-count">0</span><br>
+                        <span>Followers</span>
+                    </div>
+                    <div class="stat" id="following-count-container">
+                        <span id="following-count">0</span><br>
+                        <span>Following</span>
+                    </div>
+                    <div class="stat">
+                        <span id="post-count">0</span><br>
+                        <span>Posts</span>
+                    </div>
+                </div>
                 <p id='profileDescription'></p>
             </div>
         </div>
-        <div class="col">
-        </div>
+        <div class="col"></div>
     </div>
-    <!-- ADD COMMENT MODAL -->
+
     <div id="commentModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -89,8 +99,8 @@
             </div>
         </div>
     </div>
-    <!--MODAL-->
-    <div class="modal fade" id="windowModal" tabindex="-1" role="dialog" aria-labelledby="windowModalLabel" aria-hidden="true">
+    <!--USER LIKES MODAL-->
+    <div class="modal fade" id="windowModal" tabindex="-1" role="dialog" aria-labelledby="likesModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -100,18 +110,54 @@
                     </button>
                 </div>
                 <div class="modal-body" id="windowModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Followers Modal -->
+    <div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="followersModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="followersModalBody">
+                    <!-- Follower list will be appended here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Following Modal -->
+    <div class="modal fade" id="followingModal" tabindex="-1" role="dialog" aria-labelledby="followingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="followingModalLabel">Following</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="followingModalBody">
+                    <!-- Following list will be appended here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div>
         <div class="row">
-            <div class="col">
-            </div>
-            <div class="col-6" id="post-container">
-            </div>
-            <div class="col">
-            </div>
+            <div class="col"></div>
+            <div class="col-6" id="post-container"></div>
+            <div class="col"></div>
         </div>
     </div>
 </div>
@@ -122,62 +168,122 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     $(function() {
         var pageID = '{{ $userProfile->id_user }}';
-        let route="/profile/posts";
-        console.log(route+" "+pageID)
-        loadPosts(route,pageID);
+        let route = "/profile/posts";
+
+        function updateProfileStats() {
+            $.get("/profile/stats", { id: pageID }, function(response) {
+                $("#followers-count").text(response.followersCount);
+                $("#following-count").text(response.followingCount);
+                $("#post-count").text(response.postCount);
+            });
+        }
+
+        updateProfileStats();
+        loadPosts(route, pageID);
 
         $(window).scroll(function () {
             if (Math.ceil($(document).height() - $(window).scrollTop()) <= $(window).height() + 50) {
-                loadPosts(route,pageID);
+                loadPosts(route, pageID);
             }
         });
 
         function followButtonTextChange() {
-                var btn = $("#addORedit_btn");
-                var currentUserID = '{{ $currentUser->id_user }}';
-                var profileID = '{{ $userProfile->id_user }}';
+            var btn = $("#addORedit_btn");
+            var currentUserID = '{{ $currentUser->id_user }}';
+            var profileID = '{{ $userProfile->id_user }}';
 
-                if (profileID == currentUserID) {
-                    btn.html("Edit profile");
-                } else {
-                    $.get("/user/follow", { id: profileID }, function(response) {
-                        if (response == "FOLLOWING")
-                            btn.html("Unfollow").css("background-color", "grey");
-                        else if (response == "FOLLOWING ME")
-                            btn.html("Follow Back").css("background-color", "#db4ba6");
-                        else
-                            btn.html("Follow").css("background-color", "#db4ba6");
-                    });
-                }
+            if (profileID == currentUserID) {
+                btn.html("Edit profile");
+            } else {
+                $.get("/user/follow", { id: profileID }, function(response) {
+                    if (response == "FOLLOWING") {
+                        btn.html("Unfollow").css("background-color", "grey");
+                    } else if (response == "FOLLOWING ME") {
+                        btn.html("Follow Back").css("background-color", "#db4ba6");
+                    } else {
+                        btn.html("Follow").css("background-color", "#db4ba6");
+                    }
+                });
             }
+        }
 
         followButtonTextChange();
 
-        function handleEditOrFollow() {
-                var currentUserID = '{{ $currentUser->id_user }}';
-                var profileID = '{{ $userProfile->id_user }}';
+        $("#addORedit_btn").click(function() {
+            var currentUserID = '{{ $currentUser->id_user }}';
+            var profileID = '{{ $userProfile->id_user }}';
 
-                if (profileID == currentUserID) {
-                    window.location.href = "{{ route('editProfile') }}";
-                } else {
-                    $.post("/user/follow", { id: profileID }, function(response) {
-                            followButtonTextChange();
-                    });
-                }
+            if (profileID == currentUserID) {
+                window.location.href = "{{ route('editProfile') }}";
+            } else {
+                $.post("/user/follow", { id: profileID }, function(response) {
+                    followButtonTextChange();
+                    updateProfileStats();
+                });
             }
+        });
 
-        $("#addORedit_btn").click(handleEditOrFollow);
+        // Fetch and display followers
+        $("#followers-count-container").click(function() {
+            $.get("/followers-info", { id: pageID }, function(response) {
+                var followersList = '';
+
+                if (Array.isArray(response) && response.length > 0) {
+                    response.forEach(function(user) {
+                        let profilePicture = '/'+user.profile_picture;
+
+                        followersList += `<div class="follower-item">
+                    <img src="${profilePicture}" class="pfpNav" data-userid="${user.id_user}">
+                    <span>${user.name}</span>
+                </div>`;
+                    });
+                } else {
+                    followersList = "<p>This user has 0 followers.</p>";
+                }
+
+                $("#followersModalBody").html(followersList);
+                $("#followersModal").modal('show');
+            });
+        });
+
+// Fetch and display following
+        $("#following-count-container").click(function() {
+            $.get("/following-info", { id: pageID }, function(response) {
+                var followingList = '';
+
+                if (Array.isArray(response) && response.length > 0) {
+                    response.forEach(function(user) {
+                        let profilePicture = '/'+user.profile_picture;
+
+
+
+                        followingList += `<div class="following-item">
+                    <img src="${profilePicture}" class="pfpNav" data-userid="${user.id_user}">
+                    <span>${user.name}</span>
+                </div>`;
+                    });
+                } else {
+                    followingList = "<p>This user doesn't follow anyone.</p>";
+                }
+
+                $("#followingModalBody").html(followingList);
+                $("#followingModal").modal('show');
+            });
+        });
+
 
         var decodedDescription = decodeURIComponent("{{ $userProfile->prof_description }}");
         if (decodedDescription.length > 0)
-                $("#profileDescription").text(decodedDescription);
+            $("#profileDescription").text(decodedDescription);
         else
-                $("#profileDescription").text("No profile description");
+            $("#profileDescription").text("No profile description");
 
     });
 </script>
+
 
 </body>
 </html>

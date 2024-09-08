@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\DeactivatedUser;
 use App\Models\Following;
 use App\Models\Like;
+use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,35 @@ class UserService
             $user->username = DeactivatedUserProps::USERNAME->value;
         }
         return $user;
+    }
+
+    public function getFollowersCount($userId){
+        return Following::where('id_followed_user', $userId)->count();
+    }
+
+    public function getFollowingCount($userId){
+        return Following::where('id_follower', $userId)->count();
+    }
+
+    public function getPostCount($userId){
+        return Post::where('id_user', $userId)->count();
+    }
+
+    public function getFollowingInfo($userId){
+        $following = User::join('following', 'users.id_user', '=', 'following.id_followed_user')
+            ->where('following.id_follower', $userId)
+            ->select('users.id_user', 'users.name', 'users.profile_picture')
+            ->get();
+
+        return response()->json($following);
+    }
+
+    public function getFollowersInfo($userId){
+        $followers = User::join('following', 'users.id_user', '=', 'following.id_follower')
+            ->where('following.id_followed_user', $userId)
+            ->select('users.id_user', 'users.name', 'users.profile_picture')
+            ->get();
+        return response()->json($followers);
     }
 
     public function deactivateAccount($userId){

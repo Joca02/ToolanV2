@@ -30,6 +30,16 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/user/home', [App\Http\Controllers\UserController::class, 'index'])->name('home');
     Route::get('/user/profile', [App\Http\Controllers\UserController::class, 'showProfile'])->name('profile');
+
+//    Route::get('/user/profile/followers-count',[UserController::class,'getFollowersCount'])->name('getFollowersCount');
+//    Route::get('/user/profile/following-count',[UserController::class,'getFollowingCount'])->name('getFollowingCount');
+//    Route::get('/user/profile/post-count',[UserController::class,'getPostCount'])->name('getPostCount');
+
+    Route::get('/profile/stats',[UserController::class,'getStats'])->name('getStats');
+
+    Route::get('/followers-info',[UserController::class,'getFollowersInfo'])->name('getFollowersInfo');
+    Route::get('/following-info',[UserController::class,'getFollowingInfo'])->name('getFollowingInfo');
+
     Route::get('/logout',[LoginController::class,'logout'])->name('logout');
     Route::get('/admin/posts',[PostController::class,'getPostsFromAllUsers'])->name('allPosts');
     Route::get('/user/posts',[PostController::class,'getPostsFromFollowedUsers'])->name('followedPosts');
@@ -53,14 +63,12 @@ Route::get('/check-input-field', [App\Http\Controllers\Auth\RegisterController::
 Route::post('/register',[App\Http\Controllers\Auth\RegisterController::class,'create'])->name('register');
 // routes/web.php
 
-// Route to handle password reset request
 Route::post('/password-reset', [ResetPasswordController::class, 'requestPasswordReset'])->name('password.reset.link');
 
-// Route to show reset password form
 Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset.form');
 
-// Route to handle reset password form submission
 Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
 
 Route::get('/reactivate-account',[UserController::class,'reactivateAccount'])->name('reactivateAccount');
 
+Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');

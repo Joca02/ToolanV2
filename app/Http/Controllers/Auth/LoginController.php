@@ -76,7 +76,9 @@ class LoginController extends Controller
             }
         }
 
-        return view('auth.login');
+        return response()
+            ->view('auth.login')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     public function logout(){

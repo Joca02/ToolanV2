@@ -27,10 +27,10 @@ class UserController extends Controller
     public function showProfile(Request $request){
         $currentUser=Auth::user();
         $userProfile=$this->userService->getUser($request->id);
-        return view(
+        return response()->view(
             'profile',
             compact('userProfile', 'currentUser')
-        );
+        )->header('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     public function getFollowingInfo(Request $request){

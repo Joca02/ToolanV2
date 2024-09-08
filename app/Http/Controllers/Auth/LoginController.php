@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enum\UserType;
 use App\Http\Controllers\Controller;
 use App\Services\AuthService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -66,9 +67,15 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        if (Auth::check()) {
-            return redirect('/user/home');
+        if(Auth::check()){
+            if (Auth::user()->user_type==UserType::USER->value) {
+                return redirect('/user/home');
+            }
+            else if(Auth::user()->user_type==UserType::ADMIN->value) {
+                return redirect('/admin/home');
+            }
         }
+
         return view('auth.login');
     }
 

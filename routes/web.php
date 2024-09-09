@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
@@ -59,8 +60,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('admin')->group(function () {
     Route::get('/admin/posts',[PostController::class,'getPostsFromAllUsers'])->name('allPosts');
-
-
+    Route::get('/admin/home',[AdminController::class,'showHomePage'])->name('adminHome');
+    Route::get('/admin/profile',[AdminController::class,'showProfile'])->name('adminProfile');
 });
 
 //dont need authentication

@@ -3,7 +3,7 @@ var offset = 0;
 var isLoading = false;
 var postElement = null;
 var likeCounts={};
-function loadPosts(route, pageID) {
+function loadPosts(route, pageID,isAdminView=false) {
     if (isLoading) return;
 
     isLoading = true;
@@ -51,6 +51,9 @@ function loadPosts(route, pageID) {
                             if (post.isUserOwner) {
                                 newPost.find('.deletePost').append("<button type='button' class='delBtn btn btn-outline-danger'>X</button>");
                             }
+                            if(isAdminView){
+                                newPost.find('.like-comment-icons').remove();
+                            }
 
                             $("#post-container").append(newPost);
                         }
@@ -70,13 +73,13 @@ function loadPosts(route, pageID) {
         var userID=arr[0];
         console.log(userID)
         if(userID!="default")
-          window.location.href = "/user/profile?id="+userID;
+          window.location.href = "profile?id="+userID;
         else
           {
               var alternativeUserID = $(this).data('userid');
                 console.log("ALT "+alternativeUserID)
               if (!isNaN(alternativeUserID) && alternativeUserID !== '') {
-                  window.location.href = "/user/profile?id=" + alternativeUserID;
+                  window.location.href = "profile?id=" + alternativeUserID;
               } else {
                   console.log("Unable to find user ID using alternative method");
               }
@@ -270,6 +273,10 @@ $(function(){
             fetchSuggestions(characters);
         }
     });
+
+    $('#adminLogo').click(function (){
+        window.location.href = '/admin/home';
+    })
 
     $(document).click(function(e) {
         if (!$(e.target).closest("#search-div").length) {

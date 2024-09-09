@@ -71,6 +71,7 @@
                             <div class="modal-header">
                                 <h5 class="modal-title">Ban User</h5>
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+
                             </div>
                             <!-- Modal Body -->
                             <div class="modal-body">
@@ -111,11 +112,62 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Followers Modal -->
+                <div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="followersModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="followersModalBody">
+                                <!-- Follower list will be appended here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Following Modal -->
+                <div class="modal fade" id="followingModal" tabindex="-1" role="dialog" aria-labelledby="followingModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="followingModalLabel">Following</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="followingModalBody">
+                                <!-- Following list will be appended here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <!--END-->
                 <p class='profileName'>{{ $userProfile->name }}</p>
                 <p class='profileUsername'>{{ '@'.$userProfile->username }}</p>
                 <br>
                 <button type="button" class="btn btn-primary" id="ban_btn"></button>
+                <div id="profile-stats" class="d-flex justify-content-center">
+                    <div class="stat" id="followers-count-container">
+                        <span id="followers-count">0</span><br>
+                        <span>Followers</span>
+                    </div>
+                    <div class="stat" id="following-count-container">
+                        <span id="following-count">0</span><br>
+                        <span>Following</span>
+                    </div>
+                    <div class="stat">
+                        <span id="post-count">0</span><br>
+                        <span>Posts</span>
+                    </div>
+                </div>
                 <p id='profileDescription'></p>
             </div></div>
 
@@ -256,8 +308,56 @@
                 $("#profileDescription").text(decodedDescription);
             else $("#profileDescription").text("No profile description");
 
-        });
+            // Fetch and display followers
+            $("#followers-count-container").click(function() {
+                $.get("/followers-info", { id: pageID }, function(response) {
+                    var followersList = '';
 
+                    if (Array.isArray(response) && response.length > 0) {
+                        response.forEach(function(user) {
+                            let profilePicture = '/'+user.profile_picture;
+
+                            followersList += `<div class="follower-item">
+                    <img src="${profilePicture}" class="pfpNav" data-userid="${user.id_user}">
+                    <span>${user.name}</span>
+                </div>`;
+                        });
+                    } else {
+                        followersList = "<p>This user has 0 followers.</p>";
+                    }
+
+                    $("#followersModalBody").html(followersList);
+                    $("#followersModal").modal('show');
+                });
+            });
+
+// Fetch and display following
+            $("#following-count-container").click(function() {
+                $.get("/following-info", { id: pageID }, function(response) {
+                    var followingList = '';
+
+                    if (Array.isArray(response) && response.length > 0) {
+                        response.forEach(function(user) {
+                            let profilePicture = '/'+user.profile_picture;
+
+
+
+                            followingList += `<div class="following-item">
+                    <img src="${profilePicture}" class="pfpNav" data-userid="${user.id_user}">
+                    <span>${user.name}</span>
+                </div>`;
+                        });
+                    } else {
+                        followingList = "<p>This user doesn't follow anyone.</p>";
+                    }
+
+                    $("#followingModalBody").html(followingList);
+                    $("#followingModal").modal('show');
+                });
+            });
+
+
+        });
 
     </script>
 

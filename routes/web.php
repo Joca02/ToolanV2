@@ -32,10 +32,6 @@ Route::middleware('user')->group(function () {
 //    Route::get('/user/profile/following-count',[UserController::class,'getFollowingCount'])->name('getFollowingCount');
 //    Route::get('/user/profile/post-count',[UserController::class,'getPostCount'])->name('getPostCount');
 
-
-    Route::get('/followers-info',[UserController::class,'getFollowersInfo'])->name('getFollowersInfo');
-    Route::get('/following-info',[UserController::class,'getFollowingInfo'])->name('getFollowingInfo');
-
     Route::get('/user/posts',[PostController::class,'getPostsFromFollowedUsers'])->name('followedPosts');
     Route::post('/user/follow',[UserController::class,'followAction'])->name('followAction');
     Route::get('/user/follow',[UserController::class,'checkFollowingStatus'])->name('checkFollowingStatus');
@@ -55,7 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::get("/profile/posts",[PostController::class,'getPostsFromUser'])->name('profilePosts');
     Route::get('/user/like',[UserController::class,'getLikes'])->name('getLikes');
     Route::get('/user/comment',[UserController::class,'getComments'])->name('getComments');
-
+    Route::get('/followers-info',[UserController::class,'getFollowersInfo'])->name('getFollowersInfo');
+    Route::get('/following-info',[UserController::class,'getFollowingInfo'])->name('getFollowingInfo');
 });
 
 Route::middleware('admin')->group(function () {

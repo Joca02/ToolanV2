@@ -283,5 +283,7 @@ $(function(){
             suggestionBox.hide();
         }
     });
+
+
 });
 

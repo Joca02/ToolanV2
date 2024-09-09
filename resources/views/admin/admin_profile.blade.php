@@ -64,7 +64,7 @@
                     <img src="{{ asset($userProfile->profile_picture) }}" class='pfpProfile'>
                 </div>
                 <!-- BAN MODAL -->
-                <div id="ban-modal" class="modal">
+                <div id="ban-modal" class="modal fade">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <!-- Modal Header -->
@@ -168,18 +168,18 @@
             //postavljanje boje i teksta dugmeta za ban
             function changeBanButton()
             {
-                var admin='<?php echo $admin->id_user?>';
+                var admin={{$admin->id_user}};
                 if(pageID!=admin)
                 {
-                    $.get("user_ban_status.php",{userID:pageID},function(response){
+                    $.get("/admin/user-ban-status",{userId:pageID},function(response){
                         if(response=="banned")
                         {
-                            $("#ban_btn").css("background-color", "rgb(76, 201, 93)"); //
+                            $("#ban_btn").css("background-color", "rgb(76, 201, 93)");
                             $("#ban_btn").text("Unban user");
                         }
                         else
                         {
-                            $("#ban_btn").css("background-color", "rgb(196, 68, 68)"); //
+                            $("#ban_btn").css("background-color", "rgb(196, 68, 68)");
                             $("#ban_btn").text("Ban User");
                         }
                     });
@@ -206,7 +206,7 @@
                     if (selectedDate > todaysDate) {
                         if (txt.length > 4) {
                             console.log(banDate);
-                            $.post("set_ban.php", { banDate: banDate, userID: pageID, banReason: txt },
+                            $.post("/admin/ban-user", { banDate: banDate, userId: pageID, banReason: txt },
                                 function (response) {
                                     if (response == "success") {
                                         alert("Ban has been successfully set until " + banDate);
@@ -226,12 +226,12 @@
 
 
                 $("#ban_btn").click(function () {
-                    var admin = '<?php echo $admin->id_user ?>';
+                    var admin = {{$admin->id_user}};
                     if (pageID != admin) {
-                        $.get("user_ban_status.php", { userID: pageID }, function (response) {
+                        $.get("/admin/user-ban-status", { userId: pageID }, function (response) {
                             if (response == "banned") {
                                 if (confirm("Are you sure you want to Unban this user?")) {
-                                    $.post("unban_user.php", { userID: pageID },
+                                    $.post("/admin/unban-user", { userId: pageID },
                                         function (response) {
                                             if (response == "success") {
                                                 alert("User has been successfully unbanned.");

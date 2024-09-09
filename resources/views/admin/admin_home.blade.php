@@ -114,20 +114,26 @@
 
 
         $("#bannedUsersBtn").click(function(){
-            $.get("get_banned_users.php",function(response)
+            $.get("/admin/banned-users",function(response)
             {
                 var modalBody = $('#windowModalBody');
                 modalBody.empty();
                 $("#windowModalLabel").text("Banned users")
-                if(response.length>0)
-                {
-                    for(var i=0;i<response.length;i++)
-                    {
+                if(response.length > 0) {
+                    for(var i = 0; i < response.length; i++) {
+                        var user = response[i];
+
+                        var imgSrc = user.profile_picture;
+                        var dataAttr = user.profile_picture === 'uploads/profile_pictures/default.png'
+                            ? `data-userid="${user.id_user}"`
+                            : '';
+
                         modalBody.append("<div class='d-flex align-items-center justify-content-between mb-2'>" +
                             "<div class='d-flex align-items-center'>" +
-                            "<a href='profile_admin_view.php?id=" + response[i].id_user + "' style='display: inline-block; width: " + (60) + "px;'>" +
-                            "<img src='" + response[i].profile_picture + "' class='pfpNav'></a>" +
-                            "<span class='ml-2'>" + response[i].name + "</span>");
+                            "<img src='/" + imgSrc + "' class='pfpNav' " + dataAttr + ">" +
+                            "<span class='ml-2'>" + user.name + "</span>" +
+                            "</div>" +
+                            "</div>");
 
                     }
                 }

@@ -62,6 +62,10 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/posts',[PostController::class,'getPostsFromAllUsers'])->name('allPosts');
     Route::get('/admin/home',[AdminController::class,'showHomePage'])->name('adminHome');
     Route::get('/admin/profile',[AdminController::class,'showProfile'])->name('adminProfile');
+    Route::get('/admin/user-ban-status',[AdminController::class,'getUserBanStatus'])->name('userBanStatus');
+    Route::post('/admin/ban-user',[AdminController::class,'banUser'])->name('banUser');
+    Route::post('/admin/unban-user',[AdminController::class,'unBanUser'])->name('unBanUser');
+    Route::get('/admin/banned-users',[AdminController::class,'getBannedUsers'])->name('bannedUsers');
 });
 
 //dont need authentication

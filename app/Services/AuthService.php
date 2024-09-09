@@ -62,7 +62,17 @@ class AuthService
     }
 
     public function isUserBanned($idUser){
-        return Ban::where('id_user', $idUser)->exists();
+        $ban = Ban::where('id_user', $idUser)->first();
+
+        if (!$ban) {
+            return false;
+        }
+        if (now()->greaterThan($ban->date_end)) {
+            $ban->delete();
+            return false;
+        }
+
+        return true;
     }
     public function getBan($idUser){
         return Ban::where('id_user', $idUser)->first();

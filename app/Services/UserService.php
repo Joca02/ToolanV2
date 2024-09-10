@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\ActionType;
 use App\Enum\DeactivatedUserProps;
 use App\Enum\FollowStatus;
 use App\Enum\LikeStatus;
@@ -10,6 +11,7 @@ use App\Models\DeactivatedUser;
 use App\Models\Following;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Statistics;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +80,7 @@ class UserService
             'id_user' => $userId,
             'token' => $token
         ]);
+        StatisticsService::insertAction(ActionType::DEACTIVATE);
     }
 
     public function reactivateAccount($token,$email){
@@ -94,6 +97,7 @@ class UserService
                 ->with('failure', 'Invalid token for account reactivation');
         }
         $deactivatedUserInfo->delete();
+        StatisticsService::insertAction(ActionType::REACTIVATE);
         return redirect()
             ->route('login')
             ->with('success', 'You have successfully reactivated your account! You can now login.');
@@ -125,7 +129,7 @@ class UserService
                 ->where('id_follower', Auth::id())
                 ->delete();
             Log::info('User ' . Auth::user()->username . ' unfollowed user with user_id ' . $id);
-
+            StatisticsService::insertAction(ActionType::UNFOLLOW);
             return;
         }
         Following::insert([
@@ -133,6 +137,8 @@ class UserService
             'id_follower' => Auth::id(),
         ]);
         Log::info('User ' . Auth::user()->username . ' followed user with user_id ' . $id);
+        StatisticsService::insertAction(ActionType::FOLLOW);
+
     }
 
     public function likeAction($postId){
@@ -145,6 +151,8 @@ class UserService
             'id_post' => $postId,
             'id_user' => Auth::id(),
         ]);
+        StatisticsService::insertAction(ActionType::LIKE);
+
         return LikeStatus::LIKED;
     }
 
@@ -181,6 +189,7 @@ class UserService
             'comment' => $comment
         ]);
         if($newComment){
+            StatisticsService::insertAction(ActionType::COMMENT);
             return "success";
         }
         else{

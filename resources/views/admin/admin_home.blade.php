@@ -39,6 +39,7 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="profile?id={{ Auth::user()->id_user }}">View Profile</a>
+                    <a class="dropdown-item" href="/admin/statistics-page">Statistics</a>
                     <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
                 </div>
 
@@ -143,9 +144,6 @@
                 $('#windowModal').modal('show');
             });
         })
-
-        $.post("update_bans.php");  //ako je prosao ban korisniku, da mi se ne prikazuje u listi korisnika koji su jos pod banom
-
     });
 
 </script>

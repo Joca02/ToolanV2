@@ -43,6 +43,7 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="profile?id={{ Auth::user()->id_user }}">View Profile</a>
+                    <a class="dropdown-item" href="/admin/statistics-page">Statistics</a>
                     <a class="dropdown-item" href="{{route('logout')}}">Log Out</a>
                 </div>
 
@@ -339,8 +340,6 @@
                     if (Array.isArray(response) && response.length > 0) {
                         response.forEach(function(user) {
                             let profilePicture = '/'+user.profile_picture;
-
-
 
                             followingList += `<div class="following-item">
                     <img src="${profilePicture}" class="pfpNav" data-userid="${user.id_user}">

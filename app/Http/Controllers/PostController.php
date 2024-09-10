@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\ActionType;
 use App\Enum\PostLoadType;
 use App\Services\PostService;
+use App\Services\StatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -55,6 +57,7 @@ class PostController extends Controller
         $result = $this->postService->createPost($request->post_description, $request->picturePost);
 
         if ($result) {
+            StatisticsService::insertAction(ActionType::POST_CREATE);
             return response()->json('success');
         } else {
             return response()->json('fail', 500);
@@ -65,6 +68,7 @@ class PostController extends Controller
     {
         $result=$this->postService->deletePost($request->postId);
         if ($result) {
+            StatisticsService::insertAction(ActionType::POST_DELETE);
             return response()->json('success');
         } else {
             return response()->json('fail', 500);

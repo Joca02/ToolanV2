@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\ActionType;
 use App\Mail\UserVerificationMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,9 @@ class UserRegistrationService
             'gender' => $data['gender'],
             'verification_token' => Str::random(60)
         ]);
+
         Log::info("Registered user with id: {$user->id}");
+        StatisticsService::insertAction(ActionType::REGISTER);
         Mail::to($user->email)->send(new UserVerificationMail($user));
     }
 

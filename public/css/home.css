@@ -229,6 +229,14 @@ html, body {
             flex-wrap: wrap
         }
 
+        .statistics-header{
+            background-color: #ef63b8;
+        }
+
+        .statistics-content{
+            background-color: #212529;
+            color: wheat;
+        }
 
 #profile-stats {
     margin: 20px 0;

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enum\ActionType;
 use App\Enum\UserType;
 use App\Http\Controllers\Controller;
 use App\Services\AuthService;
+use App\Services\StatisticsService;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +62,7 @@ class LoginController extends Controller
         }
         else{
             Log::info("Login success for user with username: {$auth->username}");
+            StatisticsService::insertAction(ActionType::LOGIN);
             Auth::login($auth);
             return redirect('user/home');
         }

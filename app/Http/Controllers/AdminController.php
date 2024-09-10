@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AdminService;
+use App\Services\StatisticsService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,9 +12,15 @@ class AdminController extends Controller
 {
     private $userService;
     private $adminService;
-    public function __construct(UserService $userService,AdminService $adminService){
+    private $statisticsService;
+    public function __construct(
+        UserService $userService,
+        AdminService $adminService,
+        StatisticsService $statisticsService
+    ){
         $this->userService = $userService;
         $this->adminService = $adminService;
+        $this->statisticsService = $statisticsService;
     }
 
     public function showHomePage(){
@@ -49,5 +56,17 @@ class AdminController extends Controller
     public function getBannedUsers()
     {
         return $this->adminService->getBannedUsers();
+    }
+
+    public function getStatisticsPage(){
+        return response()
+            ->view('admin.statistics')
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    public function getStatistics()
+    {
+        $data=$this->statisticsService->getData();
+        return response()->json($data);
     }
 }

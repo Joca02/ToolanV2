@@ -21,17 +21,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes();
-Route::middleware('guest')->group(function () {
-   });
+
+
 
 Route::middleware('user')->group(function () {
     Route::get('/user/home', [App\Http\Controllers\UserController::class, 'index'])->name('home');
     Route::get('/user/profile', [App\Http\Controllers\UserController::class, 'showProfile'])->name('profile');
-
-//    Route::get('/user/profile/followers-count',[UserController::class,'getFollowersCount'])->name('getFollowersCount');
-//    Route::get('/user/profile/following-count',[UserController::class,'getFollowingCount'])->name('getFollowingCount');
-//    Route::get('/user/profile/post-count',[UserController::class,'getPostCount'])->name('getPostCount');
-
     Route::get('/user/posts',[PostController::class,'getPostsFromFollowedUsers'])->name('followedPosts');
     Route::post('/user/follow',[UserController::class,'followAction'])->name('followAction');
     Route::get('/user/follow',[UserController::class,'checkFollowingStatus'])->name('checkFollowingStatus');
@@ -63,6 +58,8 @@ Route::middleware('admin')->group(function () {
     Route::post('/admin/ban-user',[AdminController::class,'banUser'])->name('banUser');
     Route::post('/admin/unban-user',[AdminController::class,'unBanUser'])->name('unBanUser');
     Route::get('/admin/banned-users',[AdminController::class,'getBannedUsers'])->name('bannedUsers');
+    Route::get('/admin/statistics-page',[AdminController::class,'getStatisticsPage'])->name('statisticsPage');
+    Route::get('/admin/statistics',[AdminController::class,'getStatistics'])->name('getStatistics');
 });
 
 //dont need authentication

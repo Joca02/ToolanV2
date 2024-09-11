@@ -63,7 +63,7 @@
                         <label for="resetEmail">Enter your email address:</label>
                         <input type="email" class="form-control" id="resetEmail" name="email" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                    <button type="submit" class="btn  reset-btn">Send Reset Link</button>
                 </form>
             </div>
         </div>

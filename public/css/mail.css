@@ -1,0 +1,29 @@
+.email-container {
+    background-color: #212529;
+    color: #ef63b8;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+.email-text {
+    margin: 20px 0;
+}
+
+.email-link {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 10px 20px;
+    background-color: #ef63b8;
+    color: #212529;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.email-logo {
+    margin-top: 30px;
+    width: 150px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

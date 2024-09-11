@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Services\UserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -22,11 +23,14 @@ class ReactivateAccountMail
 
     public function build()
     {
+        $name=UserService::getUsersNameByEmail($this->email);
         $restoreLink = url("/reactivate-account?token={$this->token}&email={$this->email}");
-        return $this->subject('Reactivate your account')
+        return $this ->from('toolan@admin.com')
+            ->subject('Reactivate your account')
             ->view('mail.deactivated_mail')
             ->with([
                 'restoreLink' => $restoreLink,
+                'name'=> $name
             ]);
     }
 }

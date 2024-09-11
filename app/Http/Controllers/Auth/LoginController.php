@@ -35,7 +35,9 @@ class LoginController extends Controller
         if(!$auth){
             return redirect()->back()->with('failure', 'Username and password do not match');
         }
+
         else if(!$auth->verified){
+            Log::info($auth->verified);
             return redirect()
                 ->back()
                 ->with('failure', 'Please verify your email address before logging in');
@@ -64,7 +66,12 @@ class LoginController extends Controller
             Log::info("Login success for user with username: {$auth->username}");
             StatisticsService::insertAction(ActionType::LOGIN);
             Auth::login($auth);
-            return redirect('user/home');
+            if (Auth::user()->user_type==UserType::USER->value) {
+                return redirect('/user/home');
+            }
+            else if(Auth::user()->user_type==UserType::ADMIN->value) {
+                return redirect('/admin/home');
+            }
         }
     }
 

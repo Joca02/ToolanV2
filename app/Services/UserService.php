@@ -45,6 +45,9 @@ class UserService
         return $user;
     }
 
+    public static function getUsersNameByEmail($email){
+        return User::where('email', $email)->first()->name;
+    }
     public function getFollowersCount($userId){
         return Following::where('id_followed_user', $userId)->count();
     }

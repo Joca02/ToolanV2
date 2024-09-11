@@ -75,4 +75,5 @@ Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']
 
 Route::get('/reactivate-account',[UserController::class,'reactivateAccount'])->name('reactivateAccount');
 
-Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
+Route::get('/login',[LoginController::class,'showLoginForm'])->name('showLoginForm');
+Route::post('/login',[LoginController::class,'login'])->name('login');

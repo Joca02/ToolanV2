@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Services\UserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -21,11 +22,14 @@ class PasswordResetMail extends Mailable
 
     public function build()
     {
+        $name=UserService::getUsersNameByEmail($this->email);
         $resetLink = url("/reset-password?token={$this->token}&email={$this->email}");
-        return $this->subject('Reset Your Password')
+        return $this ->from('toolan@admin.com')
+            ->subject('Reset Your Password')
             ->view('mail.password_reset')
             ->with([
                 'resetLink' => $resetLink,
+                'name' => $name
             ]);
     }
 }

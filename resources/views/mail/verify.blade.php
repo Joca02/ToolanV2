@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Verify Your Email Address</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ asset('css/mail.css') }}">
 </head>
 <body>
-    <h1>Hello, {{ $name }}</h1>
-<p>Thank you for registering! Please click the link below to verify your email address:</p>
-<a href="{{ $verificationUrl }}">Verify Email</a>
-<p>If you did not create an account, no further action is required.</p>
+<div class="email-container">
+    <p class="email-text">Hello, {{$name}}</p>
+    <p class="email-text">Please click the link below to verify your email address:</p>
+    <a href="{{ $verificationUrl }}" class="email-link">Verify Email</a>
+    <p class="email-text">Thank you for joining us!</p>
+    <img src="{{ asset('uploads/toolan.png') }}" alt="Logo" class="email-logo">
+</div>
 </body>
 </html>

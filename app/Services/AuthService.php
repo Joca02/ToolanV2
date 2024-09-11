@@ -20,6 +20,7 @@ class AuthService
         if(!$user || !Hash::check($password, $user->password)){
             return null;
         }
+        Log::info("aaa ".$user->verified);
         return $user;
     }
 

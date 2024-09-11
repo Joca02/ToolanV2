@@ -242,14 +242,16 @@ $(document).on('click', '.delBtn', function() {
 //pretraga korisnika
 $(function(){
     const suggestionBox = $("#suggestion-box");
+    let debounceTimeout;
+
     function fetchSuggestions(characters) {
         suggestionBox.empty();
 
-        if(characters.length > 0) {
+        if (characters.length > 0) {
             $.get("/filter-users?name=" + characters, function(response) {
                 if (response.length > 0) {
                     for (var i = 0; i < response.length; i++) {
-                        const suggestionItem = $("<a href='profile?id="+response[i].id_user+"' class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
+                        const suggestionItem = $("<a href='profile?id=" + response[i].id_user + "' class='list-group-item list-group-item-action list-group-item-light'><img src='/" + response[i].profile_picture + "' class='profile-picture-search'> " + response[i].name + "</a>");
                         suggestionBox.append(suggestionItem);
                     }
                     suggestionBox.show();
@@ -262,28 +264,33 @@ $(function(){
         }
     }
 
-    $("#search").on("input", function(){
+    function debounceFetch(characters) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(function() {
+            fetchSuggestions(characters);
+        }, 200);
+    }
+
+    $("#search").on("input", function() {
         var characters = $(this).val();
-        fetchSuggestions(characters);
+        debounceFetch(characters);
     });
 
-    $("#search").on("click", function(){
+    $("#search").on("click", function() {
         var characters = $(this).val();
         if (characters.length > 0) {
-            fetchSuggestions(characters);
+            debounceFetch(characters);
         }
     });
 
-    $('#adminLogo').click(function (){
+    $('#adminLogo').click(function () {
         window.location.href = '/admin/home';
-    })
+    });
 
     $(document).click(function(e) {
         if (!$(e.target).closest("#search-div").length) {
             suggestionBox.hide();
         }
     });
-
-
 });
 

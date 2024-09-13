@@ -66,7 +66,23 @@ class UserService
             ->select('users.id_user', 'users.name', 'users.profile_picture')
             ->get();
 
-        return response()->json($following);
+        $followingTransformed = $following->map(function ($followedUser) {
+            $isDeactivated = DeactivatedUser::where('id_user', $followedUser->id_user)->exists();
+            if ($isDeactivated) {
+                return [
+                    'id_user' => $followedUser->id_user,
+                    'name' => DeactivatedUserProps::NAME->value,
+                    'profile_picture' => DeactivatedUserProps::PROFILE_PICTURE->value
+                ];
+            }
+            return [
+                'id_user' => $followedUser->id_user,
+                'name' => $followedUser->name,
+                'profile_picture' => $followedUser->profile_picture
+            ];
+        });
+
+        return response()->json($followingTransformed);
     }
 
     public function getFollowersInfo($userId){
@@ -74,7 +90,24 @@ class UserService
             ->where('following.id_followed_user', $userId)
             ->select('users.id_user', 'users.name', 'users.profile_picture')
             ->get();
-        return response()->json($followers);
+
+        $followersTransformed = $followers->map(function ($follower) {
+            $isDeactivated = DeactivatedUser::where('id_user', $follower->id_user)->exists();
+            if ($isDeactivated) {
+                return [
+                    'id_user' => $follower->id_user,
+                    'name' => DeactivatedUserProps::NAME->value,
+                    'profile_picture' => DeactivatedUserProps::PROFILE_PICTURE->value
+                ];
+            }
+            return [
+                'id_user' => $follower->id_user,
+                'name' => $follower->name,
+                'profile_picture' => $follower->profile_picture
+            ];
+        });
+
+        return response()->json($followersTransformed);
     }
 
     public function deactivateAccount($userId){

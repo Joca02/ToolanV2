@@ -66,14 +66,9 @@ Route::middleware('admin')->group(function () {
 Route::get('/verify/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::get('/check-input-field', [App\Http\Controllers\Auth\RegisterController::class, 'checkInputField'])->name('checkInputField');
 Route::post('/register',[App\Http\Controllers\Auth\RegisterController::class,'create'])->name('register');
-
 Route::post('/password-reset', [ResetPasswordController::class, 'requestPasswordReset'])->name('password.reset.link');
-
 Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset.form');
-
 Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.reset');
-
 Route::get('/reactivate-account',[UserController::class,'reactivateAccount'])->name('reactivateAccount');
-
 Route::get('/login',[LoginController::class,'showLoginForm'])->name('showLoginForm');
 Route::post('/login',[LoginController::class,'login'])->name('login');
